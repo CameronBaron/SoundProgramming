@@ -1,6 +1,9 @@
 #ifndef _APPLICATION_H_
 #define _APPLICATION_H_
 
+#include <imgui.h>
+#include "imgui_impl_glfw_gl3.h"
+
 struct GLFWwindow;
 
 class Application

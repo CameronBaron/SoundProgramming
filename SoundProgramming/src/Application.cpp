@@ -36,12 +36,22 @@ bool Application::startup()
 
 	glfwSwapInterval(1);
 
+#pragma region ImGui Init
+
+	ImGui_ImplGlfwGL3_Init(m_window, true);
+	ImGuiIO& io = ImGui::GetIO();
+	io.DisplaySize.x = 1280;
+	io.DisplaySize.y = 720;
+#pragma endregion
+
+
 
 	return true;
 }
 
 void Application::shutdown()
 {
+	ImGui_ImplGlfwGL3_Shutdown();
 	glfwDestroyWindow(this->m_window);
 	glfwTerminate();
 }
@@ -52,8 +62,10 @@ bool Application::update()
 	{
 		return false;
 	}
+
+	ImGui_ImplGlfwGL3_NewFrame();
 	
 	return true; 
 }
 
-void Application::draw() {}
+void Application::draw() { ImGui::Render(); }

@@ -11,6 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="deps\imgui\imconfig.h" />
+    <ClInclude Include="deps\imgui\imgui.h" />
+    <ClInclude Include="deps\imgui\imgui_impl_glfw_gl3.h" />
+    <ClInclude Include="deps\imgui\imgui_internal.h" />
+    <ClInclude Include="deps\imgui\stb_rect_pack.h" />
+    <ClInclude Include="deps\imgui\stb_textedit.h" />
+    <ClInclude Include="deps\imgui\stb_truetype.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="src\Gizmos.h" />
@@ -18,6 +25,10 @@
     <ClInclude Include="src\SoundProgramming.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="deps\imgui\imgui.cpp" />
+    <ClCompile Include="deps\imgui\imgui_demo.cpp" />
+    <ClCompile Include="deps\imgui\imgui_draw.cpp" />
+    <ClCompile Include="deps\imgui\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Gizmos.cpp" />
@@ -54,11 +65,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>./deps/fmod/inc;./deps/glm;./deps/glfw/include;$(IncludePath)</IncludePath>
+    <IncludePath>./deps/imgui;./deps/fmod/inc;./deps/glm;./deps/glfw/include;$(IncludePath)</IncludePath>
     <LibraryPath>./deps/fmod/lib;./deps/glfw/lib-vc2015;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>./deps/fmod/inc;./deps/glm;./deps/GLFW/include;$(IncludePath)</IncludePath>
+    <IncludePath>./deps/imgui;./deps/fmod/inc;./deps/glm;./deps/GLFW/include;$(IncludePath)</IncludePath>
     <LibraryPath>./deps/fmod/lib;./deps/glfw/lib-vc2013;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

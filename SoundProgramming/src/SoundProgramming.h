@@ -15,18 +15,20 @@ public:
     virtual void draw();
 
 	void createSound(FMOD::Sound** pSound, const char* pFile);
-	void playSound(FMOD::Sound* pSound, bool bLoop = false);
+	void playSound(FMOD::Sound* pSound, FMOD_VECTOR pPos, FMOD_VECTOR pVel, float dt, bool bLoop = false);
 	void releaseSound(FMOD::Sound* pSound);
 
-    FlyCamera m_camera;
+	void UpdateGUI();
 
+    FlyCamera m_camera;
+	
 	FMOD_RESULT result;
 
 	FMOD::System* m_pFModSystem;
 	FMOD::Sound* m_pSound;
 	FMOD::Sound* m_gunSound;
-	FMOD::Channel* m_pChannel;
-	FMOD::ChannelGroup* m_pChannelGroup;
+	FMOD::ChannelGroup* m_channelGroupMusic;
+	FMOD::ChannelGroup* m_channelGroupSFX;
 	FMOD::DSP* m_pEchoDSP;
 
 	FMOD_VECTOR m_FMposition;

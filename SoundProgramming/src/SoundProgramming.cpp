@@ -45,14 +45,12 @@ bool SoundProgramming::startup()
 	result = m_pFModSystem->createDSPByType(FMOD_DSP_TYPE_ECHO, &m_pEchoDSP);
 	createSound(&m_pSound, "./data/audio/background_music.ogg");
 	createSound(&m_gunSound, "./data/audio/gunshot.ogg");
-	result = m_pFModSystem->createChannelGroup("MyChannelGroup", &m_pChannelGroup);
-	result = m_pChannel->addDSP(0, m_pEchoDSP);
-	result = m_pChannel->set3DMinMaxDistance(50, 100);
+	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
 
 #pragma endregion
 
 	// Play background Music!
-	playSound(m_pSound, true);
+	playSound(m_pSound, m_FMChannelPos, m_FMChannelVel, 0);
 
     return true;
 }
@@ -97,18 +95,19 @@ bool SoundProgramming::update()
 	m_FMup			= { 0, 1, 0};
 
 	m_pFModSystem->set3DListenerAttributes(0, &m_FMposition, &m_FMvelocity, &m_FMforward, &m_FMup);
-	m_pChannel->set3DAttributes(&m_FMChannelPos, &m_FMChannelVel, 0);
 
 	guntimer += dt;
 	if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
 	{
 		//play sound m_gunSound
-		playSound(m_gunSound);
+		playSound(m_gunSound, m_FMposition, m_FMvelocity, dt);
 		guntimer = 0;
 	}
 
 	m_pFModSystem->update();
 
+	UpdateGUI();
+	
     return true;
 }
 
@@ -120,6 +119,9 @@ void SoundProgramming::draw()
 
     glfwSwapBuffers(m_window);
     glfwPollEvents();
+
+	// Calls Render for ImGui
+	Application::draw();
 }
 
 void SoundProgramming::createSound(FMOD::Sound** pSound, const char * pFile)
@@ -128,7 +130,7 @@ void SoundProgramming::createSound(FMOD::Sound** pSound, const char * pFile)
 	//printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 }
 
-void SoundProgramming::playSound(FMOD::Sound* pSound, bool bLoop)
+void SoundProgramming::playSound(FMOD::Sound* pSound, FMOD_VECTOR pPos, FMOD_VECTOR pVel, float dt, bool bLoop)
 {
 	if (!bLoop)
 		pSound->setMode(FMOD_LOOP_OFF);
@@ -138,11 +140,21 @@ void SoundProgramming::playSound(FMOD::Sound* pSound, bool bLoop)
 		pSound->setLoopCount(-1);
 	}
 
-	result = m_pFModSystem->playSound(pSound, m_pChannelGroup, false, &m_pChannel);
+	FMOD::Channel* pChannel;
+	result = m_pFModSystem->playSound(pSound, m_channelGroupMusic, false, &pChannel);
+	//result = pChannel->addDSP(0, m_pEchoDSP);
+	//result = pChannel->set3DMinMaxDistance(0.1f, 100);
+	result = pChannel->setPitch(50 * dt);
+	result = pChannel->set3DAttributes(&pPos, &pVel, 0);
 	//printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 }
 
 void SoundProgramming::releaseSound(FMOD::Sound * pSound)
 {
 	pSound->release();
+}
+
+void SoundProgramming::UpdateGUI()
+{
+
 }
