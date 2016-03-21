@@ -24,8 +24,10 @@ public:
 
 	FMOD::System* m_pFModSystem;
 	FMOD::Sound* m_pSound;
+	FMOD::Sound* m_gunSound;
 	FMOD::Channel* m_pChannel;
 	FMOD::ChannelGroup* m_pChannelGroup;
+	FMOD::DSP* m_pEchoDSP;
 
 	FMOD_VECTOR m_FMposition;
 	FMOD_VECTOR m_FMvelocity;
@@ -34,6 +36,9 @@ public:
 
 	FMOD_VECTOR m_FMChannelPos = { 0, 0, 0 };
 	FMOD_VECTOR m_FMChannelVel = { 0, 0, 0 };
+
+	float gunCooldown = 2;
+	float guntimer = 0;
 };
 
 #endif //CAM_PROJ_H_
