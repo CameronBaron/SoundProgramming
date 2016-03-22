@@ -9,14 +9,16 @@
 #pragma once
 #include <fmod.hpp>
 #include <fmod_errors.h>
-#include <fmod_studio.hpp>
 #include "GameObject.h"
 
 class SoundClass : public GameObject
 {
 public:
-	SoundClass();
+	SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channelGroup, FMOD_VECTOR position, const char* filePath);
 	~SoundClass();
+	void Update();
+
+	void FMODErrorCheck(FMOD_RESULT res);
 
 	void Play();										// Plays the audio clip.
 	void Pause();										// Pauses the audio clip.
@@ -33,6 +35,7 @@ public:
 // Static
 	static void PlayClipAtPoint();					// Plays a clip at a given position in world space.
 
+	FMOD::System** m_FModSysRef;
 	FMOD_RESULT result;
 	FMOD::Sound* m_audioClip;		// The default AudioClip to play.
 	FMOD::Channel* m_channelRef;
@@ -53,8 +56,10 @@ public:
 	float m_reverbZoneMix;			// The amount by which the signal from the AudioSource will be mixed into the global reverb associated with the Reverb Zones.
 	float m_spatialBlend;			// Sets how much this AudioSource is affected by 3D spatialisation calculations (attenuation, doppler, etc). 0.0 makes the sound full 2D, 1.0 makes it full 3D.
 	float m_spread;					// Sets the spread angle (in degrees) of a 3D stereo or multichannel sound in speaker space.
-	float m_time;					// Playback position in seconds.
+	unsigned int m_time;			// Playback position in seconds.
 	float m_volume;					// The volume of the audio source.
+
+	float s_delayTimer;
 
 // 3D Settings
 	float m_dopplerLevel;
