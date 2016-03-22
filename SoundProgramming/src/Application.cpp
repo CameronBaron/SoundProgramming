@@ -62,10 +62,8 @@ bool Application::update()
 	{
 		return false;
 	}
-
-	ImGui_ImplGlfwGL3_NewFrame();
 	
 	return true; 
 }
 
-void Application::draw() { ImGui::Render(); }
+void Application::draw() {  }

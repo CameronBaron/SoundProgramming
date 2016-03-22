@@ -3,8 +3,7 @@
 
 #include "Application.h"
 #include "Camera.h"
-#include <fmod.hpp>
-#include <fmod_errors.h>
+#include "SoundClass.h"
 
 class SoundProgramming : public Application
 {
@@ -25,6 +24,7 @@ public:
 	FMOD_RESULT result;
 
 	FMOD::System* m_pFModSystem;
+	//FMOD::Studio::System* m_pFModStudioSystem;
 	FMOD::Sound* m_pSound;
 	FMOD::Sound* m_gunSound;
 	FMOD::ChannelGroup* m_channelGroupMusic;
@@ -41,6 +41,9 @@ public:
 
 	float gunCooldown = 2;
 	float guntimer = 0;
+	float lastFrameTime = 0;
+	float dt = 0;
+
 };
 
 #endif //CAM_PROJ_H_

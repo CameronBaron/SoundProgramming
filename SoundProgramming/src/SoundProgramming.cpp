@@ -72,11 +72,10 @@ bool SoundProgramming::update()
         return false;
     }
 
-    Gizmos::clear();
+    dt = (float)glfwGetTime() - lastFrameTime;
+	lastFrameTime = (float)glfwGetTime();
 
-    float dt = (float)glfwGetTime();
-    glfwSetTime(0.0);
-
+	Gizmos::clear();
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
     for (int i = 0; i <= 20; ++i)
@@ -114,14 +113,15 @@ bool SoundProgramming::update()
 void SoundProgramming::draw()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	ImGui_ImplGlfwGL3_NewFrame();
 
     Gizmos::draw(m_camera.proj, m_camera.view);
 
+	ImGui::Render();
     glfwSwapBuffers(m_window);
     glfwPollEvents();
 
 	// Calls Render for ImGui
-	Application::draw();
 }
 
 void SoundProgramming::createSound(FMOD::Sound** pSound, const char * pFile)
@@ -144,8 +144,8 @@ void SoundProgramming::playSound(FMOD::Sound* pSound, FMOD_VECTOR pPos, FMOD_VEC
 	result = m_pFModSystem->playSound(pSound, m_channelGroupMusic, false, &pChannel);
 	//result = pChannel->addDSP(0, m_pEchoDSP);
 	//result = pChannel->set3DMinMaxDistance(0.1f, 100);
-	result = pChannel->setPitch(50 * dt);
-	result = pChannel->set3DAttributes(&pPos, &pVel, 0);
+	//result = pChannel->setPitch(50 * dt);
+	//result = pChannel->set3DAttributes(&pPos, &pVel, 0);
 	//printf("FMOD error! (%d) %s\n", result, FMOD_ErrorString(result));
 }
 
