@@ -78,8 +78,8 @@ void SoundClass::SetDefaultValues()
 	m_priority = 128;
 	
 	m_dopplerLevel = 1;
-	m_minDistance = 1;
-	m_maxDistance = 500;
+	m_minDistance = 0.1f;
+	m_maxDistance = 5000;
 	m_pitch = 1;
 	m_reverbZoneMix = 1;
 	m_spatialBlend = 0;

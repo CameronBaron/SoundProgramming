@@ -34,6 +34,7 @@ bool SoundProgramming::startup()
 	}
 
 	// Initialize FMOD with 512 channels
+	//result = m_pFModSystem->init(512, FMOD_INIT_3D_RIGHTHANDED, 0);
 	result = m_pFModSystem->init(512, FMOD_INIT_NORMAL, 0);
 
 	if (result != FMOD_OK)
@@ -91,19 +92,22 @@ bool SoundProgramming::update()
 			sound.update();
 	*/
 
-	m_FMposition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
-	m_FMvelocity = { 0, 0, 0 };
-	m_FMforward = { 1, 0, 0 };
-	m_FMup = { 0, 1, 0 };
-	m_pFModSystem->set3DListenerAttributes(0, &m_FMposition, &m_FMvelocity, &m_FMforward, &m_FMup);
+	Gizmos::addSphere(vec3(0), 0.1f, 5, 5, vec4(1, 0, 0, 1));
 
-	guntimer += dt;
-	if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
-	{
-		//play sound m_gunSound
-		playSound(m_gunSound, m_FMposition, m_FMvelocity, dt);
-		guntimer = 0;
-	}
+	m_listenerPosition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
+	m_listenerVelocity = { 0, 0, 0 };
+	m_listenerForward = { m_camera.front.x, m_camera.front.y, m_camera.front.z };
+	m_listenerUp = { m_camera.up.x, m_camera.up.y, m_camera.up.z };
+	result = m_pFModSystem->set3DListenerAttributes
+		(0, &m_listenerPosition, &m_listenerVelocity, &m_listenerForward, &m_listenerUp);
+
+	//guntimer += dt;
+	//if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
+	//{
+	//	//play sound m_gunSound
+	//	playSound(m_gunSound, m_FMposition, m_FMvelocity, dt);
+	//	guntimer = 0;
+	//}
 
 	result = m_pFModSystem->update();
 #pragma endregion

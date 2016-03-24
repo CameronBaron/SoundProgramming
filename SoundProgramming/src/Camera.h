@@ -20,8 +20,6 @@ public:
 	const vec3 getPosition() { return vec3(world[3].x, world[3].y, world[3].z); }
 	void setPerspective(float fov, float aspect, float near, float far);
 	void setLookAt(vec3 pos, vec3 center, vec3 up);
-	const vec3 getVelocity();
-	const vec3 getUp();
 
 	virtual void update(float dt) = 0;
 
@@ -40,6 +38,8 @@ public:
 	FlyCamera(float aspect, float speed);
 	virtual void update(float dt);
 
+	void UpdateVectors();
+
 	float m_speed;
 	float sensitivity;
 
@@ -47,6 +47,8 @@ public:
 	float pitch;
 
 	bool m_clicked_down;
+
+	vec3 position, front, up, right, worldUp;
 };
 
 #endif //CAMERA_H_

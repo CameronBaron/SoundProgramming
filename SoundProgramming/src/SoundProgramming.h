@@ -26,10 +26,10 @@ public:
 	FMOD::ChannelGroup* m_channelGroupMusic;
 	FMOD::ChannelGroup* m_channelGroupSFX;
 
-	FMOD_VECTOR m_FMposition;
-	FMOD_VECTOR m_FMvelocity;
-	FMOD_VECTOR m_FMforward;
-	FMOD_VECTOR m_FMup;
+	FMOD_VECTOR m_listenerPosition;
+	FMOD_VECTOR m_listenerVelocity;
+	FMOD_VECTOR m_listenerForward;
+	FMOD_VECTOR m_listenerUp;
 
 	FMOD_VECTOR m_FMChannelPos = { 0, 0, 0 };
 	FMOD_VECTOR m_FMChannelVel = { 0, 0, 0 };
@@ -39,7 +39,7 @@ public:
 	float lastFrameTime = 0;
 	float dt = 0;
 
-	SoundClass* bgSound;
+	SoundClass* bgSound;	
 };
 
 #endif //CAM_PROJ_H_
