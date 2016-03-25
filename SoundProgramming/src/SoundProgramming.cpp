@@ -46,6 +46,25 @@ bool SoundProgramming::startup()
 	CreateCommonSounds();
 	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
 
+	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
+	{
+		{ 1, -1, -1 },{ 1, -1, 1 },{ 1, 1, 1 },{ 1, 1, -1 }, //+X face
+		{ -1, -1, -1 },{ -1, -1, 1 },{ -1, 1, 1 },{ -1, 1, -1 }, //-X face
+		{ -1, 1, -1 },{ 1, 1, -1 },{ 1, 1, 1 },{ -1, 1, 1 }, //+Y face
+		{ -1, -1, -1 },{ 1, -1, -1 },{ 1, -1, 1 },{ -1, -1, 1 }, //-Y face
+		{ -1, -1, 1 },{ -1, 1, 1 },{ 1, 1, 1 },{ 1, 1, -1 }, //+Z face
+		{ -1, -1, -1 },{ -1, 1, -1 },{ 1, 1, -1 },{ 1,-1, -1 }, //-Z face
+	};
+
+	m_pFModSystem->createGeometry(6, 24, &geometry);
+
+	int pi = 0;
+	for (int i = 0; i < 6; ++i)
+	{
+		result = geometry->addPolygon(0.5f, 1, 1, 4, cube + (4 * i), &pi);
+		//FMOD_Geometry_AddPolygon(geometry, 1, 1, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
+	}
+
 	bgSound->Play();
 #pragma endregion
 
@@ -72,6 +91,7 @@ bool SoundProgramming::update()
     dt = (float)glfwGetTime() - lastFrameTime;
 	lastFrameTime = (float)glfwGetTime();
 
+#pragma region Gizmos
 	Gizmos::clear();
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
@@ -82,6 +102,10 @@ bool SoundProgramming::update()
         Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i),
             i == 10 ? white : black);
     }
+	
+	Gizmos::addSphere(vec3(0), 0.1f, 5, 5, vec4(1, 0, 0, 1));
+	
+#pragma endregion
 
     m_camera.update(dt);
 
@@ -91,8 +115,6 @@ bool SoundProgramming::update()
 		if (sound.isplaying)
 			sound.update();
 	*/
-
-	Gizmos::addSphere(vec3(0), 0.1f, 5, 5, vec4(1, 0, 0, 1));
 
 	m_listenerPosition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
 	m_listenerVelocity = { 0, 0, 0 };

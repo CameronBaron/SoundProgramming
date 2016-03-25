@@ -39,7 +39,9 @@ public:
 	float lastFrameTime = 0;
 	float dt = 0;
 
-	SoundClass* bgSound;	
+	SoundClass* bgSound;
+	FMOD::Geometry* geometry;
+	//FMOD_VECTOR cube[24];
 };
 
 #endif //CAM_PROJ_H_
