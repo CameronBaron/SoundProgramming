@@ -1,13 +1,11 @@
-﻿Build started 3/25/2016 5:57:46 PM.
+﻿Build started 3/26/2016 5:34:44 PM.
      1>Project "C:\Users\Cam\Documents\soundprogramming\SoundProgramming\SoundProgramming.vcxproj" on node 2 (Build target(s)).
-     1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D GLM_FORCE_PURE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt src\SoundProgramming.cpp
-         SoundProgramming.cpp
-       Link:
+     1>Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.exe" /INCREMENTAL /NOLOGO fmodstudioL_vc.lib fmodL_vc.lib glfw3.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.lib" /MACHINE:X86 Debug\imgui.obj
          Debug\imgui_demo.obj
          Debug\imgui_draw.obj
          Debug\imgui_impl_glfw_gl3.obj
+         Debug\OBJLoader.obj
          Debug\GameObject.obj
          Debug\SoundClass.obj
          Debug\Application.obj
@@ -16,9 +14,11 @@
          Debug\gl_core_4_4.obj
          Debug\main.obj
          Debug\SoundProgramming.obj
+         Debug\tiny_obj_loader.obj
+     1>LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
          SoundProgramming.vcxproj -> C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.exe
      1>Done Building Project "C:\Users\Cam\Documents\soundprogramming\SoundProgramming\SoundProgramming.vcxproj" (Build target(s)).
 
 Build succeeded.
 
-Time Elapsed 00:00:09.18
+Time Elapsed 00:00:02.21

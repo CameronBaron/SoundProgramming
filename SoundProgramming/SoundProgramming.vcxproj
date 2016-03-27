@@ -18,6 +18,7 @@
     <ClInclude Include="deps\imgui\stb_rect_pack.h" />
     <ClInclude Include="deps\imgui\stb_textedit.h" />
     <ClInclude Include="deps\imgui\stb_truetype.h" />
+    <ClInclude Include="src\OBJLoader.h" />
     <ClInclude Include="src\GameObject.h" />
     <ClInclude Include="src\SoundClass.h" />
     <ClInclude Include="src\Application.h" />
@@ -25,12 +26,14 @@
     <ClInclude Include="src\Gizmos.h" />
     <ClInclude Include="src\gl_core_4_4.h" />
     <ClInclude Include="src\SoundProgramming.h" />
+    <ClInclude Include="src\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_demo.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="deps\imgui\imgui_impl_glfw_gl3.cpp" />
+    <ClCompile Include="src\OBJLoader.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\SoundClass.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -39,6 +42,7 @@
     <ClCompile Include="src\gl_core_4_4.c" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\SoundProgramming.cpp" />
+    <ClCompile Include="src\tinyobjloader\tiny_obj_loader.cc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{52A0B1C6-713C-4EA4-9847-5599845906ED}</ProjectGuid>

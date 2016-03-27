@@ -104,6 +104,7 @@ bool SoundProgramming::update()
     }
 	
 	Gizmos::addSphere(vec3(0), 0.1f, 5, 5, vec4(1, 0, 0, 1));
+	Gizmos::addAABB(vec3(0), vec3(1, 1, 1), vec4(0, 0, 1, 1));
 	
 #pragma endregion
 
