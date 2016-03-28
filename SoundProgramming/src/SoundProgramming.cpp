@@ -43,9 +43,6 @@ bool SoundProgramming::startup()
 		return false;
 	}
 
-	CreateCommonSounds();
-	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
-
 	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
 	{
 		{ 1, -1, -1 },{ 1, -1, 1 },{ 1, 1, 1 },{ 1, 1, -1 }, //+X face
@@ -65,9 +62,14 @@ bool SoundProgramming::startup()
 		//FMOD_Geometry_AddPolygon(geometry, 1, 1, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
 	}
 
+	CreateCommonSounds();
+	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
+
 	bgSound->Play();
 #pragma endregion
 
+	church = new OBJLoader("Church", "./data/Cathedral/sibenik.obj", "./data/Shaders/shaders.vert", "data/Shaders/shaders.frag");
+	church->Init();
     return true;
 }
 
@@ -146,6 +148,16 @@ void SoundProgramming::draw()
 	ImGui_ImplGlfwGL3_NewFrame();
 
     Gizmos::draw(m_camera.proj, m_camera.view);
+
+	glUseProgram(church->m_programID);
+	unsigned int loc = glGetUniformLocation(church->m_programID, "ProjectionView");
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera.view_proj[0][0]);
+
+	loc = glGetUniformLocation(church->m_programID, "ModelMatrix");
+	glUniformMatrix4fv(loc, 1, GL_FALSE, &church->modelMatrix[0][0]);
+	glUseProgram(0);
+
+	church->DrawElements();
 
 	ImGui::Render();
     glfwSwapBuffers(m_window);

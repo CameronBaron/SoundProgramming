@@ -44,6 +44,10 @@
     <ClCompile Include="src\SoundProgramming.cpp" />
     <ClCompile Include="src\tinyobjloader\tiny_obj_loader.cc" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="data\Shaders\shaders.frag" />
+    <None Include="data\Shaders\shaders.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{52A0B1C6-713C-4EA4-9847-5599845906ED}</ProjectGuid>
     <RootNamespace>SoundProgramming</RootNamespace>

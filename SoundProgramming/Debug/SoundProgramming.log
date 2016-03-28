@@ -1,6 +1,11 @@
-﻿Build started 3/26/2016 5:34:44 PM.
+﻿Build started 3/28/2016 12:27:53 PM.
      1>Project "C:\Users\Cam\Documents\soundprogramming\SoundProgramming\SoundProgramming.vcxproj" on node 2 (Build target(s)).
-     1>Link:
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D GLM_FORCE_PURE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\" /Fd"Debug\vc140.pdb" /Gd /TP /analyze- /errorReport:prompt src\OBJLoader.cpp src\SoundProgramming.cpp
+         SoundProgramming.cpp
+         OBJLoader.cpp
+         Generating Code...
+       Link:
          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.exe" /INCREMENTAL /NOLOGO fmodstudioL_vc.lib fmodL_vc.lib glfw3.lib opengl32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /Debug /PDB:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Cam\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.lib" /MACHINE:X86 Debug\imgui.obj
          Debug\imgui_demo.obj
          Debug\imgui_draw.obj
@@ -21,4 +26,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.21
+Time Elapsed 00:00:19.83

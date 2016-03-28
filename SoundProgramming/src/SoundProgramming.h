@@ -4,6 +4,7 @@
 #include "Application.h"
 #include "Camera.h"
 #include "SoundClass.h"
+#include "OBJLoader.h"
 
 class SoundProgramming : public Application
 {
@@ -42,6 +43,7 @@ public:
 	SoundClass* bgSound;
 	FMOD::Geometry* geometry;
 	//FMOD_VECTOR cube[24];
+	OBJLoader* church;
 };
 
 #endif //CAM_PROJ_H_

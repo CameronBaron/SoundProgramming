@@ -1,23 +1,66 @@
 #include "OBJLoader.h"
 #include <assert.h>
 #include <memory>
+#include <fstream>
 
-OBJLoader::OBJLoader()
+OBJLoader::OBJLoader(const char* name, const char* objFilePath, const char* vertShaderfilePath, const char* fragShaderFilePath) :
+	name(name), m_OBJFilePath(objFilePath), m_vertShaderFilePath(vertShaderfilePath), m_fragShaderFilePath(fragShaderFilePath)
 {
-}
-	
+	glm::translate(glm::mat4(1), glm::vec3(0));
+}	
 
 OBJLoader::~OBJLoader()
 {
+	shapes.clear();
+	materials.clear();
+	delete[] m_OBJFilePath;
 }
 
+void OBJLoader::Init()
+{
+	int success = GL_FALSE;
+	unsigned int vertexShader = LoadShaderFromFile(m_vertShaderFilePath, GL_VERTEX_SHADER);
+	unsigned int fragmentShader = LoadShaderFromFile(m_fragShaderFilePath, GL_FRAGMENT_SHADER);
+
+	m_programID = glCreateProgram();
+	glAttachShader(m_programID, vertexShader);
+	glAttachShader(m_programID, fragmentShader);
+	glLinkProgram(m_programID);
+
+	glGetProgramiv(m_programID, GL_LINK_STATUS, &success);
+	if (success == GL_FALSE)
+	{
+		int infoLogLength = 0;
+		glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &infoLogLength);
+		char* infoLog = new char[infoLogLength];
+
+		glGetProgramInfoLog(m_programID, infoLogLength, 0, infoLog);
+		printf("Error: Failed to link shader program!\n");
+		printf("%s\n", infoLog);
+		delete[] infoLog;
+	}
+
+	glDeleteShader(fragmentShader);
+	glDeleteShader(vertexShader);
+
+	LoadFile();
+	CreateBuffers();
+}
 
 void OBJLoader::LoadFile()
 {
-
-	//std::string err = tinyobj::LoadObj(shapes, materials, inputfile.c_str());
 	std::string err;
-	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath);
+
+	std::ifstream ifs(m_OBJFilePath, std::ifstream::in);
+	if (!ifs) {
+		printf("Cannot open file %s\n", m_OBJFilePath);
+		//err << "Cannot open file [" << m_OBJFilePath << "]" << std::endl;
+		//err = errss.str();
+		return;
+	}
+	tinyobj::MaterialFileReader matFileReader("./data/Cathedral/");
+	tinyobj::LoadObj(shapes, materials, err, ifs, matFileReader);
+	//tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath);
 
 	if (!err.empty()) {
 		std::cerr << err << std::endl;
@@ -71,4 +114,93 @@ void OBJLoader::PrintMeshInfo()
 		//}
 		printf("\n");
 	}
+}
+
+void OBJLoader::CreateBuffers()
+{
+	// Generate GL buffers
+	gl_info.resize(shapes.size());
+	for (unsigned int mesh_index = 0; mesh_index < shapes.size(); mesh_index++)
+	{
+		glGenVertexArrays(1, &gl_info[mesh_index].m_VAO);
+		glGenBuffers(1, &gl_info[mesh_index].m_VBO);
+		glGenBuffers(1, &gl_info[mesh_index].m_IBO);
+		glBindVertexArray(gl_info[mesh_index].m_VAO);
+
+		unsigned int float_count = shapes[mesh_index].mesh.positions.size();
+
+		float_count += shapes[mesh_index].mesh.normals.size();
+		float_count += shapes[mesh_index].mesh.texcoords.size();
+
+		std::vector<float> vertex_data;
+		vertex_data.reserve(float_count);
+
+		vertex_data.insert(vertex_data.end(), shapes[mesh_index].mesh.positions.begin(), shapes[mesh_index].mesh.positions.end());
+		vertex_data.insert(vertex_data.end(), shapes[mesh_index].mesh.normals.begin(), shapes[mesh_index].mesh.normals.end());
+		vertex_data.insert(vertex_data.end(), shapes[mesh_index].mesh.texcoords.begin(), shapes[mesh_index].mesh.texcoords.end());
+
+		gl_info[mesh_index].m_index_count = shapes[mesh_index].mesh.indices.size();
+
+		glBindBuffer(GL_ARRAY_BUFFER, gl_info[mesh_index].m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, vertex_data.size() * sizeof(float),
+			vertex_data.data(), GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_info[mesh_index].m_IBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, shapes[mesh_index].mesh.indices.size() * sizeof(unsigned int),
+			shapes[mesh_index].mesh.indices.data(), GL_STATIC_DRAW);
+
+		glEnableVertexAttribArray(0); // Position
+		glEnableVertexAttribArray(1); // Normal
+		glEnableVertexAttribArray(2); // Texcoord
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, 0, (void*)(sizeof(float) * shapes[mesh_index].mesh.positions.size()));
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * shapes[mesh_index].mesh.positions.size() + shapes[mesh_index].mesh.normals.size()));
+
+		// Uniform
+		shapes[mesh_index].mesh.material_ids;
+		unsigned int matLoc = glGetUniformLocation(m_programID, "material");
+		glUniform1f(matLoc, 0);
+
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+}
+
+void OBJLoader::DrawElements()
+{
+	glUseProgram(m_programID);
+
+	
+
+	for (unsigned int i = 0; i < gl_info.size(); i++)
+	{
+		glBindVertexArray(gl_info[i].m_VAO);
+		//check_gl_error();
+		glDrawElements(GL_TRIANGLES, gl_info[i].m_index_count, GL_UNSIGNED_INT, 0);
+	}
+}
+
+unsigned int OBJLoader::LoadShaderFromFile(const char * _filePath, unsigned int _shaderType)
+{
+	FILE* file;
+	fopen_s(&file, _filePath, "rb");
+	if (file == nullptr)
+		return -1;
+
+	// Read the shader source
+	fseek(file, 0, SEEK_END);
+	unsigned int length = ftell(file);
+	fseek(file, 0, SEEK_SET);
+	char* source = new char[length + 1];
+	memset(source, 0, length + 1);
+	fread(source, sizeof(char), length, file);
+	fclose(file);
+
+	unsigned int shader = glCreateShader(_shaderType);
+	glShaderSource(shader, 1, &source, 0);
+	glCompileShader(shader);
+	delete[] source;
+
+	return shader;
 }
