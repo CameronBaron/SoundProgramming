@@ -6,7 +6,7 @@
 OBJLoader::OBJLoader(const char* name, const char* objFilePath, const char* vertShaderfilePath, const char* fragShaderFilePath) :
 	name(name), m_OBJFilePath(objFilePath), m_vertShaderFilePath(vertShaderfilePath), m_fragShaderFilePath(fragShaderFilePath)
 {
-	glm::translate(glm::mat4(1), glm::vec3(0));
+
 }	
 
 OBJLoader::~OBJLoader()
@@ -50,17 +50,7 @@ void OBJLoader::Init()
 void OBJLoader::LoadFile()
 {
 	std::string err;
-
-	std::ifstream ifs(m_OBJFilePath, std::ifstream::in);
-	if (!ifs) {
-		printf("Cannot open file %s\n", m_OBJFilePath);
-		//err << "Cannot open file [" << m_OBJFilePath << "]" << std::endl;
-		//err = errss.str();
-		return;
-	}
-	tinyobj::MaterialFileReader matFileReader("./data/Cathedral/");
-	tinyobj::LoadObj(shapes, materials, err, ifs, matFileReader);
-	//tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath);
+	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath, "./data/Cathedral/");
 
 	if (!err.empty()) {
 		std::cerr << err << std::endl;
@@ -157,9 +147,6 @@ void OBJLoader::CreateBuffers()
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * shapes[mesh_index].mesh.positions.size() + shapes[mesh_index].mesh.normals.size()));
 
 		// Uniform
-		shapes[mesh_index].mesh.material_ids;
-		unsigned int matLoc = glGetUniformLocation(m_programID, "material");
-		glUniform1f(matLoc, 0);
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

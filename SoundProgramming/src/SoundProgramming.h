@@ -43,7 +43,7 @@ public:
 	SoundClass* bgSound;
 	FMOD::Geometry* geometry;
 	//FMOD_VECTOR cube[24];
-	OBJLoader* church;
+	//OBJLoader* church;
 };
 
 #endif //CAM_PROJ_H_

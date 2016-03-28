@@ -58,7 +58,7 @@ bool SoundProgramming::startup()
 	int pi = 0;
 	for (int i = 0; i < 6; ++i)
 	{
-		result = geometry->addPolygon(0.5f, 1, 1, 4, cube + (4 * i), &pi);
+		result = geometry->addPolygon(1, 1, 1, 4, cube + (4 * i), &pi);
 		//FMOD_Geometry_AddPolygon(geometry, 1, 1, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
 	}
 
@@ -67,9 +67,10 @@ bool SoundProgramming::startup()
 
 	bgSound->Play();
 #pragma endregion
-
-	church = new OBJLoader("Church", "./data/Cathedral/sibenik.obj", "./data/Shaders/shaders.vert", "data/Shaders/shaders.frag");
-	church->Init();
+	
+	//church = new OBJLoader("Church", "./data/Cathedral/sibenik.obj", "./data/Shaders/shaders.vert", "data/Shaders/shaders.frag");
+	//church->Init();
+	
     return true;
 }
 
@@ -104,12 +105,11 @@ bool SoundProgramming::update()
         Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i),
             i == 10 ? white : black);
     }
-	
-	Gizmos::addSphere(vec3(0), 0.1f, 5, 5, vec4(1, 0, 0, 1));
+	Gizmos::addSphere(vec3(sinf(glfwGetTime()) * 5, 0, cos(glfwGetTime()) * 5), 0.1f, 5, 5, vec4(1, 0, 0, 1));
 	Gizmos::addAABB(vec3(0), vec3(1, 1, 1), vec4(0, 0, 1, 1));
 	
 #pragma endregion
-
+	
     m_camera.update(dt);
 
 #pragma region FMOD
@@ -125,6 +125,11 @@ bool SoundProgramming::update()
 	m_listenerUp = { m_camera.up.x, m_camera.up.y, m_camera.up.z };
 	result = m_pFModSystem->set3DListenerAttributes
 		(0, &m_listenerPosition, &m_listenerVelocity, &m_listenerForward, &m_listenerUp);
+
+
+	bgSound->m_channelPosition = { sinf((float)glfwGetTime()) * 5, 0, cos((float)glfwGetTime()) * 5 };
+
+	bgSound->Update();
 
 	//guntimer += dt;
 	//if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -149,15 +154,15 @@ void SoundProgramming::draw()
 
     Gizmos::draw(m_camera.proj, m_camera.view);
 
-	glUseProgram(church->m_programID);
-	unsigned int loc = glGetUniformLocation(church->m_programID, "ProjectionView");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera.view_proj[0][0]);
-
-	loc = glGetUniformLocation(church->m_programID, "ModelMatrix");
-	glUniformMatrix4fv(loc, 1, GL_FALSE, &church->modelMatrix[0][0]);
-	glUseProgram(0);
-
-	church->DrawElements();
+	//glUseProgram(church->m_programID);
+	//unsigned int loc = glGetUniformLocation(church->m_programID, "ProjectionView");
+	//glUniformMatrix4fv(loc, 1, GL_FALSE, &m_camera.view_proj[0][0]);
+	//
+	//loc = glGetUniformLocation(church->m_programID, "ModelMatrix");
+	//glUniformMatrix4fv(loc, 1, GL_FALSE, &church->modelMatrix[0][0]);
+	//glUseProgram(0);
+	//
+	//church->DrawElements();
 
 	ImGui::Render();
     glfwSwapBuffers(m_window);

@@ -19,6 +19,7 @@ void SoundClass::Update()
 	if (m_isPlaying)
 	{
 		result = m_channelRef->getPosition(&m_time, FMOD_TIMEUNIT_PCM);
+		m_channelRef->set3DAttributes(&m_channelPosition, &m_channelVelocity);
 	}
 }
 

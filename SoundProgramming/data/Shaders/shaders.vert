@@ -17,5 +17,5 @@ void main()
 	vTexcoord = Texcoord;
 	vPosition = Position;
 
-	gl_Position = ProjectionView * ModelMatrix * vec4(Position, 1); 
+	gl_Position = ProjectionView * vec4(Position, 1); 
 }

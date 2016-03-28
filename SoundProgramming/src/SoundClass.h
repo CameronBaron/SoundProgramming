@@ -39,6 +39,8 @@ public:
 	FMOD_RESULT result;
 	FMOD::Sound* m_audioClip;		// The default AudioClip to play.
 	FMOD::Channel* m_channelRef;
+	FMOD_VECTOR m_channelPosition;
+	FMOD_VECTOR m_channelVelocity;
 	FMOD::ChannelGroup* m_channelGroupRef;
 
 	bool m_bypassEffects;			// Bypass effects (applied from filter components or global filters).
