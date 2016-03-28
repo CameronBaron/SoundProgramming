@@ -9,7 +9,7 @@ out vec3 vNormal;
 out vec2 vTexcoord;
 
 uniform mat4 ProjectionView;
-uniform mat4 ModelMatrix;
+//uniform mat4 ModelMatrix;
 
 void main()
 {

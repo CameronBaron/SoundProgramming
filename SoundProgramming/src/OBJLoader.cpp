@@ -50,15 +50,15 @@ void OBJLoader::Init()
 void OBJLoader::LoadFile()
 {
 	std::string err;
-	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath, "./data/Cathedral/");
+	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath);
 
 	if (!err.empty()) {
 		std::cerr << err << std::endl;
-		exit(1);
 	}
 
 	std::cout << "# of shapes    : " << shapes.size() << std::endl;
 	std::cout << "# of materials : " << materials.size() << std::endl;
+	//PrintMeshInfo();
 }
 
 void OBJLoader::PrintMeshInfo()

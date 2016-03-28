@@ -1089,7 +1089,7 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 
       char namebuf[4096];
       token += 2;
-      sscanf(token, "%s", namebuf);
+      sscanf_s(token, "%s", namebuf);
       tag.name = std::string(namebuf);
 
       token += tag.name.size() + 1;
@@ -1113,7 +1113,7 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
       for (size_t i = 0; i < static_cast<size_t>(ts.num_strings); ++i) {
         char stringValueBuffer[4096];
 
-        sscanf(token, "%s", stringValueBuffer);
+        sscanf_s(token, "%s", stringValueBuffer);
         tag.stringValues[i] = stringValueBuffer;
         token += tag.stringValues[i].size() + 1;
       }
