@@ -42,41 +42,27 @@ bool SoundProgramming::startup()
 		return false;
 	}
 
-	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
-	{
-		{ 1, -1, -1 },{ 1, -1, 1 },{ 1, 1, 1 },{ 1, 1, -1 }, //+X face
-		{ -1, -1, -1 },{ -1, -1, 1 },{ -1, 1, 1 },{ -1, 1, -1 }, //-X face
-		{ -1, 1, -1 },{ 1, 1, -1 },{ 1, 1, 1 },{ -1, 1, 1 }, //+Y face
-		{ -1, -1, -1 },{ 1, -1, -1 },{ 1, -1, 1 },{ -1, -1, 1 }, //-Y face
-		{ -1, -1, 1 },{ -1, 1, 1 },{ 1, 1, 1 },{ 1, 1, -1 }, //+Z face
-		{ -1, -1, -1 },{ -1, 1, -1 },{ 1, 1, -1 },{ 1,-1, -1 }, //-Z face
-	};
-
-	result = m_pFModSystem->createGeometry(6, 24, &geometry);
-
-	box = new Cube(vec3(5, 0, 0), vec3(1, 1, 1), 1, 1, true);
-
-	result = m_pFModSystem->createGeometry(6, 24, &box->geometry);
+	box = new Cube(vec3(5, 0, 0), vec3(1, 2, 1), vec4(0.75f, 0.75f, 0.75f, 1), 1, 1, true);
+	floor = new Cube(vec3(0, -0.5f, 0), vec3(5, 0.5f, 5), vec4(0.25f, 0.25f, 0.25f, 1), 1, 1, true);
+	result = m_pFModSystem->createGeometry(6, 24, &box->m_geometry);
+	result = m_pFModSystem->createGeometry(6, 24, &floor->m_geometry);
 
 	box->Init();
+	floor->Init();
 
 	/* TODO:				23/03/16 11:00am
 	for each(BaseObject bo in objectlist)
 	{
 		result = m_pFModSystem->createGeometry(6,24, &bo->geometry);
+		bo->Init();
 	}
 	*/
-
-	int pi = 0;
-	for (int i = 0; i < 6; ++i)
-	{
-		result = geometry->addPolygon(1, 1, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
-	}
 
 	CreateCommonSounds();
 	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
 
 	bgSound->Play();
+	bgSound2->Play();
 #pragma endregion
 	
     return true;
@@ -104,6 +90,7 @@ bool SoundProgramming::update()
 
 #pragma region Gizmos
 	Gizmos::clear();
+
     vec4 white(1);
     vec4 black(0, 0, 0, 1);
     for (int i = 0; i <= 20; ++i)
@@ -111,8 +98,9 @@ bool SoundProgramming::update()
         Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
         Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
     }
-	Gizmos::addSphere(vec3((float)sinf(glfwGetTime()) * 5, 0, cos((float)glfwGetTime()) * 5), 0.1f, 5, 5, vec4(1, 0, 0, 1));
-	Gizmos::addAABB(vec3(0), vec3(1, 1, 1), vec4(0, 0, 1, 1));
+
+	box->Update();
+	floor->Update();
 	
 #pragma endregion
 	
@@ -132,11 +120,21 @@ bool SoundProgramming::update()
 	result = m_pFModSystem->set3DListenerAttributes
 		(0, &m_listenerPosition, &m_listenerVelocity, &m_listenerForward, &m_listenerUp);
 
+	if(sound1moving)
+		bgSound->m_channelPosition = { sinf((float)glfwGetTime()) * 5, 2, cos((float)glfwGetTime()) * 5 };
+	else
+	{
+	}
 
-	bgSound->m_channelPosition = { sinf((float)glfwGetTime()) * 5, 0, cos((float)glfwGetTime()) * 5 };
-	box->Update();
-
+	if(sound2moving)
+		bgSound2->m_channelPosition = { sound2Pos };
+	else
+		bgSound2->m_channelPosition = { sound2Pos };
+	
+	bgSound->m_channelRef->setVolume(sound1volume);
 	bgSound->Update();
+	bgSound2->m_channelRef->setVolume(sound2volume);
+	bgSound2->Update();
 
 	//guntimer += dt;
 	//if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -149,7 +147,6 @@ bool SoundProgramming::update()
 	result = m_pFModSystem->update();
 #pragma endregion
 	
-	UpdateGUI();
 	
     return true;
 }
@@ -161,6 +158,7 @@ void SoundProgramming::draw()
 
     Gizmos::draw(m_camera.proj, m_camera.view);
 
+	UpdateGUI();
 	ImGui::Render();
     glfwSwapBuffers(m_window);
     glfwPollEvents();
@@ -172,9 +170,19 @@ void SoundProgramming::CreateCommonSounds()
 {
 	bgSound = new SoundClass(&m_pFModSystem, m_channelGroupMusic, m_FMChannelPos, "./data/audio/background_music.ogg");
 	bgSound->m_loop = true;
+
+	bgSound2 = new SoundClass(&m_pFModSystem, m_channelGroupMusic, m_FMChannelPos, "./data/audio/AMemoryAway.ogg");
+	bgSound->m_loop = true;
 }
 
 void SoundProgramming::UpdateGUI()
 {
+	ImGui::Begin("Sound Controls");
 
+		ImGui::DragFloat("Sound1 Volume", &sound1volume, 0.2f, 0.0f, 3);
+		ImGui::Checkbox("Auto rotate", &sound1moving);
+
+		ImGui::DragFloat("Sound2 Volume", &sound2volume, 0.2f, 0.0f, 3);
+
+	ImGui::End();
 }

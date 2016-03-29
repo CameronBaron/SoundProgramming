@@ -1,8 +1,9 @@
-﻿  Cube.cpp
+﻿  SoundProgramming.cpp
   Generating Code...
   Skipping... (no relevant changes detected)
+  SoundClass.cpp
   imgui_impl_glfw_gl3.cpp
   imgui_draw.cpp
   imgui.cpp
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
+  main.cpp
   SoundProgramming.vcxproj -> C:\Users\cameron.baron\Documents\soundprogramming\SoundProgramming\Debug\SoundProgramming.exe

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "SoundClass.h"
 #include "Objects\Cube.h"
+#include <vector>
 
 class SoundProgramming : public Application
 {
@@ -40,9 +41,21 @@ public:
 	float lastFrameTime = 0;
 	float dt = 0;
 
+	bool GUIopened = true;
+	bool keypress = false;
+
 	SoundClass* bgSound;
-	FMOD::Geometry* geometry;
+	float sound1volume = 1;
+	vec3 sound1Pos;
+	bool sound1moving = true;
+
+	SoundClass* bgSound2;
+	float sound2volume = 1;
+	FMOD_VECTOR sound2Pos;
+	bool sound2moving = false;
+
 	Cube* box;
+	Cube* floor;
 };
 
 #endif //CAM_PROJ_H_

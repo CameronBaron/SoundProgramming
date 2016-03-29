@@ -4,7 +4,7 @@
 class Cube : public BaseObject
 {
 public:
-	Cube(vec3 pos, vec3 sc, float occ, float rev, bool filled);
+	Cube(vec3 pos, vec3 scale, vec4 color, float occ, float rev, bool filled);
 	~Cube();
 
 	virtual void Init();
@@ -14,8 +14,6 @@ public:
 
 private:
 	FMOD_RESULT result;
-
-	FMOD_VECTOR tempPos;
 
 	bool isFilled;
 };

@@ -1,5 +1,6 @@
 #include "SoundClass.h"
-
+#include "Gizmos.h"
+#include "../deps/glm/glm/glm.hpp"
 
 SoundClass::SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channelGroup, FMOD_VECTOR position, const char* filePath) : m_FModSysRef(mainSystemRef), m_channelGroupRef(channelGroup)
 {
@@ -20,6 +21,8 @@ void SoundClass::Update()
 	{
 		result = m_channelRef->getPosition(&m_time, FMOD_TIMEUNIT_PCM);
 		m_channelRef->set3DAttributes(&m_channelPosition, &m_channelVelocity);
+
+		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 5, 5, glm::vec4(1, 0, 0, 1));
 	}
 }
 
@@ -42,9 +45,10 @@ void SoundClass::Play()
 			result = m_audioClip->setMode(FMOD_LOOP_NORMAL);
 			result = m_audioClip->setLoopCount(-1);
 		}
-		result = (*m_FModSysRef)->playSound(m_audioClip, m_channelGroupRef, false, &m_channelRef);
+		result = (*m_FModSysRef)->playSound(m_audioClip, m_channelGroupRef, true, &m_channelRef);
 		FMODErrorCheck(result);
 		//update all needed vars
+		UnPause();
 		m_isPlaying = true;
 		m_mute = false;
 	}
@@ -70,7 +74,6 @@ void SoundClass::SetDefaultValues()
 	m_bypassListenerEffects = false;
 	m_bypassReverbZones = false;
 	m_ignoreListernerPause = false;
-	m_isPlaying = true;
 	m_isPlaying = false;
 	m_loop = false;
 	m_mute = false;

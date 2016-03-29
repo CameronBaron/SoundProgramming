@@ -76,7 +76,7 @@ FlyCamera::FlyCamera(float aspect, float new_speed) : Camera(aspect)
 	pitch = 0;
 	worldUp = vec3(0, 1, 0);
 	position = front = up = right = vec3(0);
-	UpdateVectors();
+	//UpdateVectors();
 }
 
 void FlyCamera::update(float dt)
@@ -152,15 +152,15 @@ void FlyCamera::update(float dt)
 					pitch = glm::radians(-89.f);
 				}
 
-					mat4 pitch_mat = glm::rotate((pitch), vec3(1, 0, 0));
-					mat4 yaw_mat = glm::rotate((yaw), vec3(0, 1, 0));
+				mat4 pitch_mat = glm::rotate((pitch), vec3(1, 0, 0));
+				mat4 yaw_mat = glm::rotate((yaw), vec3(0, 1, 0));
 
-					mat4 transform = yaw_mat * pitch_mat;
+				mat4 transform = yaw_mat * pitch_mat;
 
-					transform[3] = world[3];
-					world = transform;
-					view = glm::inverse(world);
-					view_proj = proj * view;
+				transform[3] = world[3];
+				world = transform;
+				view = glm::inverse(world);
+				view_proj = proj * view;
 			}
 			m_clicked_down = true;
 		}
@@ -177,16 +177,7 @@ void FlyCamera::update(float dt)
 
 void FlyCamera::UpdateVectors()
 {
-	// Calculate new front
-	position = getPosition();
-	vec3 frontVec;
-	frontVec.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-	frontVec.y = sin(glm::radians(pitch));
-	frontVec.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-	front = glm::normalize(frontVec);
-
-	// Also calculate new Right and Up
-	// Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-	right = glm::normalize(glm::cross(front, worldUp));
-	up = glm::normalize(glm::cross(right, front));
+	front = world[2].xyz * -1;
+	right = world[0].xyz;
+	up = glm::cross(front, right);
 }
