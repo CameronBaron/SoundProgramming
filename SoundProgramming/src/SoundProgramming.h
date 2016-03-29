@@ -28,6 +28,8 @@ public:
 	FMOD::ChannelGroup* m_channelGroupMusic;
 	FMOD::ChannelGroup* m_channelGroupSFX;
 
+	FMOD::Reverb3D* m_reverb3D;
+
 	FMOD_VECTOR m_listenerPosition;
 	FMOD_VECTOR m_listenerVelocity;
 	FMOD_VECTOR m_listenerForward;
@@ -56,6 +58,8 @@ public:
 
 	Cube* box;
 	Cube* floor;
+
+	vec4 WHITE = vec4(1, 1, 1, 1);
 };
 
 #endif //CAM_PROJ_H_

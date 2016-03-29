@@ -12,7 +12,7 @@ bool SoundProgramming::startup()
         return false;
     }
 
-    glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+    glClearColor(1, 1, 1, 1);
     glEnable(GL_DEPTH_TEST);
     Gizmos::create();
 
@@ -42,10 +42,16 @@ bool SoundProgramming::startup()
 		return false;
 	}
 
-	box = new Cube(vec3(5, 0, 0), vec3(1, 2, 1), vec4(0.75f, 0.75f, 0.75f, 1), 1, 1, true);
-	floor = new Cube(vec3(0, -0.5f, 0), vec3(5, 0.5f, 5), vec4(0.25f, 0.25f, 0.25f, 1), 1, 1, true);
+	box = new Cube(vec3(5, 0, 0), vec3(1, 2, 1), WHITE, 1, 1, true);
+	floor = new Cube(vec3(0, -0.5f, 0), vec3(15, 0.5f, 15), WHITE, 1, 1, true);
 	result = m_pFModSystem->createGeometry(6, 24, &box->m_geometry);
 	result = m_pFModSystem->createGeometry(6, 24, &floor->m_geometry);
+
+	m_pFModSystem->createReverb3D(&m_reverb3D);
+	FMOD_VECTOR reverbPos = { -5, 0, 0 };
+	result = m_reverb3D->set3DAttributes(&reverbPos, 10, 20);
+	FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_AUDITORIUM;
+	m_reverb3D->setProperties(&prop);
 
 	box->Init();
 	floor->Init();
@@ -98,6 +104,7 @@ bool SoundProgramming::update()
         Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
         Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
     }
+	Gizmos::addSphere(vec3(-5, 0, 0), 5, 10, 10, vec4(0));
 
 	box->Update();
 	floor->Update();
@@ -129,7 +136,10 @@ bool SoundProgramming::update()
 	if(sound2moving)
 		bgSound2->m_channelPosition = { sound2Pos };
 	else
-		bgSound2->m_channelPosition = { sound2Pos };
+		bgSound2->m_channelPosition = { 0, -2, 0 };
+	
+	FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_AUDITORIUM;
+	m_reverb3D->setProperties(&prop);
 	
 	bgSound->m_channelRef->setVolume(sound1volume);
 	bgSound->Update();
@@ -179,7 +189,7 @@ void SoundProgramming::UpdateGUI()
 {
 	ImGui::Begin("Sound Controls");
 
-		ImGui::DragFloat("Sound1 Volume", &sound1volume, 0.2f, 0.0f, 3);
+		ImGui::DragFloat("Sound1 Volume", &sound1volume, 0.02f, 0.0f, 10);
 		ImGui::Checkbox("Auto rotate", &sound1moving);
 
 		ImGui::DragFloat("Sound2 Volume", &sound2volume, 0.2f, 0.0f, 3);
