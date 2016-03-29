@@ -52,7 +52,20 @@ bool SoundProgramming::startup()
 		{ -1, -1, -1 },{ -1, 1, -1 },{ 1, 1, -1 },{ 1,-1, -1 }, //-Z face
 	};
 
-	m_pFModSystem->createGeometry(6, 24, &geometry);
+	result = m_pFModSystem->createGeometry(6, 24, &geometry);
+
+	box = new Cube(vec3(5, 0, 0), vec3(1, 1, 1), 1, 1, true);
+
+	result = m_pFModSystem->createGeometry(6, 24, &box->geometry);
+
+	box->Init();
+
+	/* TODO:				23/03/16 11:00am
+	for each(BaseObject bo in objectlist)
+	{
+		result = m_pFModSystem->createGeometry(6,24, &bo->geometry);
+	}
+	*/
 
 	int pi = 0;
 	for (int i = 0; i < 6; ++i)
@@ -121,6 +134,7 @@ bool SoundProgramming::update()
 
 
 	bgSound->m_channelPosition = { sinf((float)glfwGetTime()) * 5, 0, cos((float)glfwGetTime()) * 5 };
+	box->Update();
 
 	bgSound->Update();
 

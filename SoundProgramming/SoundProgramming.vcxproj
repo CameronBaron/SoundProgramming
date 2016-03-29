@@ -11,6 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Objects\Cube.h" />
+    <ClInclude Include="src\Objects\Cylinder.h" />
+    <ClInclude Include="src\Objects\Sphere.h" />
     <ClInclude Include="src\Objects\BaseObject.h" />
     <ClInclude Include="deps\imgui\imconfig.h" />
     <ClInclude Include="deps\imgui\imgui.h" />
@@ -30,10 +33,13 @@
     <ClInclude Include="src\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Objects\Cube.cpp" />
+    <ClCompile Include="src\Objects\Cylinder.cpp" />
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_demo.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="deps\imgui\imgui_impl_glfw_gl3.cpp" />
+    <ClCompile Include="src\Objects\Sphere.cpp" />
     <ClCompile Include="src\OBJLoader.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\SoundClass.cpp" />
