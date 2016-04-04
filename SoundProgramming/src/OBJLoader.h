@@ -1,10 +1,11 @@
 #pragma once
 #include "gl_core_4_4.h"
-#include "tinyobjloader\tiny_obj_loader.h"
 #include <iostream>
 #include <vector>
 #include "../deps/glm/glm/glm.hpp"
 #include "../deps/glm/glm/ext.hpp"
+#include <string>
+#include "tinyobjloader\tiny_obj_loader.h"
 
 struct OpenGLInfo
 {
@@ -34,10 +35,13 @@ public:
 
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
+	unsigned int* mat_ref;
 	std::vector<OpenGLInfo> gl_info;
 
 	unsigned int m_programID;
 	const char* name;
 	glm::mat4 modelMatrix;
+
+	static std::map<std::string, int> material_map;
 };
 

@@ -10,8 +10,6 @@ public:
 	virtual void Init();
 	virtual void Update();
 
-	void CreateVerts();
-
 private:
 	FMOD_RESULT result;
 

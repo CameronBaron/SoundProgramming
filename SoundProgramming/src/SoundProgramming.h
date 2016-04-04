@@ -4,7 +4,9 @@
 #include "Application.h"
 #include "Camera.h"
 #include "SoundClass.h"
-#include "Objects\Cube.h"
+#include "Objects\Room.h"
+#include "tinyobjloader\tiny_obj_loader.h"
+#include "OBJLoader.h"
 #include <vector>
 
 class SoundProgramming : public Application
@@ -58,6 +60,8 @@ public:
 
 	Cube* box;
 	Cube* floor;
+
+	Room* room;
 
 	vec4 WHITE = vec4(1, 1, 1, 1);
 };

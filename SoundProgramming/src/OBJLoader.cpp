@@ -3,6 +3,8 @@
 #include <memory>
 #include <fstream>
 
+std::map<std::string, int> material_map;
+
 OBJLoader::OBJLoader(const char* name, const char* objFilePath, const char* vertShaderfilePath, const char* fragShaderFilePath) :
 	name(name), m_OBJFilePath(objFilePath), m_vertShaderFilePath(vertShaderfilePath), m_fragShaderFilePath(fragShaderFilePath)
 {
@@ -43,6 +45,7 @@ void OBJLoader::Init()
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 
+
 	LoadFile();
 	CreateBuffers();
 }
@@ -50,7 +53,7 @@ void OBJLoader::Init()
 void OBJLoader::LoadFile()
 {
 	std::string err;
-	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath);
+	tinyobj::LoadObj(shapes, materials, err, m_OBJFilePath, "./data/");
 
 	if (!err.empty()) {
 		std::cerr << err << std::endl;
@@ -147,19 +150,67 @@ void OBJLoader::CreateBuffers()
 		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, (void*)(sizeof(float) * shapes[mesh_index].mesh.positions.size() + shapes[mesh_index].mesh.normals.size()));
 
 		// Uniform
+#pragma region Textures
+
+		mat_ref = new unsigned int[materials.size()];
+		int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+		//tinyobj::LoadMtl(material_map, materials, );
+
+		glGenTextures(1, &mat_ref[0]);
+		glBindTexture(GL_TEXTURE_2D, mat_ref[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, &materials[0]);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glActiveTexture(GL_TEXTURE0);
+		unsigned int matTex = glGetUniformLocation(m_programID, "material");
+		glUniform1i(matTex, 0);
+
+		/*mat_ref = new unsigned int[materials.size()];
+
+		for (int i = 0; i < materials.size(); i++)
+		{
+			int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+
+			glGenTextures(1, &mat_ref[i]);
+			glBindTexture(GL_TEXTURE_2D, mat_ref[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, &materials[i]);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, 1);
+		unsigned int ambientTex = glGetUniformLocation(m_programID, "ambient");
+		glUniform1i(ambientTex, 0);
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 1);
+		unsigned int diffuseTex = glGetUniformLocation(m_programID, "diffuse");
+		glUniform1i(diffuseTex, 0);
+
+		glActiveTexture(GL_TEXTURE2);
+		glBindTexture(GL_TEXTURE_2D, 1);
+		unsigned int specularTex = glGetUniformLocation(m_programID, "specular");
+		glUniform1i(specularTex, 0);*/
+
+#pragma endregion
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	}
+
+
+	
+
 }
 
 void OBJLoader::DrawElements()
 {
 	glUseProgram(m_programID);
-
 	
-
 	for (unsigned int i = 0; i < gl_info.size(); i++)
 	{
 		glBindVertexArray(gl_info[i].m_VAO);

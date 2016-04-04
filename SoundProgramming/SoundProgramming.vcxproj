@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Objects\Room.h" />
     <ClInclude Include="src\Objects\Cube.h" />
     <ClInclude Include="src\Objects\Cylinder.h" />
     <ClInclude Include="src\Objects\Sphere.h" />
@@ -33,6 +34,7 @@
     <ClInclude Include="src\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Objects\Room.cpp" />
     <ClCompile Include="src\Objects\Cube.cpp" />
     <ClCompile Include="src\Objects\Cylinder.cpp" />
     <ClCompile Include="deps\imgui\imgui.cpp" />

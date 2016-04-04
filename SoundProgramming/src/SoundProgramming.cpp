@@ -12,7 +12,7 @@ bool SoundProgramming::startup()
         return false;
     }
 
-    glClearColor(1, 1, 1, 1);
+    glClearColor(0.25f, 0.25f, 0.25f, 1);
     glEnable(GL_DEPTH_TEST);
     Gizmos::create();
 
@@ -43,9 +43,12 @@ bool SoundProgramming::startup()
 	}
 
 	box = new Cube(vec3(5, 0, 0), vec3(1, 2, 1), WHITE, 1, 1, true);
-	floor = new Cube(vec3(0, -0.5f, 0), vec3(15, 0.5f, 15), WHITE, 1, 1, true);
+	floor = new Cube(vec3(0, -0.5f, 0), vec3(15, 0.5f, 15), vec4(0.25f, 0.25f, 0.25f, 1), 1, 1, true);
 	result = m_pFModSystem->createGeometry(6, 24, &box->m_geometry);
 	result = m_pFModSystem->createGeometry(6, 24, &floor->m_geometry);
+
+	room = new Room(vec3(5), 2.22f, 1, 1, vec4(0.9f, 0.1f, 0.1f, 1), 1, 5);
+	room->Init(m_pFModSystem);
 
 	m_pFModSystem->createReverb3D(&m_reverb3D);
 	FMOD_VECTOR reverbPos = { -5, 0, 0 };
@@ -69,6 +72,7 @@ bool SoundProgramming::startup()
 
 	bgSound->Play();
 	bgSound2->Play();
+
 #pragma endregion
 	
     return true;
@@ -112,6 +116,8 @@ bool SoundProgramming::update()
 #pragma endregion
 	
     m_camera.update(dt);
+
+	room->Update();
 
 #pragma region FMOD
 	/*

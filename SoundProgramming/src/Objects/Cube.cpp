@@ -14,8 +14,21 @@ Cube::~Cube()
 
 void Cube::Init()
 {
-	CreateVerts();
-	
+	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
+	{
+		{ 1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x, -1 * m_scale.y,  1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z }, //+X face
+		{ -1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z },{ -1 * m_scale.x, -1 * m_scale.y,  1 * m_scale.z },{ -1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z },{ -1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z }, //-X face
+		{ -1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z },{ -1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z }, //+Y face
+		{ -1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x, -1 * m_scale.y,  1 * m_scale.z },{ -1 * m_scale.x, -1 * m_scale.y,  1 * m_scale.z }, //-Y face
+		{ -1 * m_scale.x, -1 * m_scale.y,  1 * m_scale.z },{ -1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y,  1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z }, //+Z face
+		{ -1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z },{ -1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x,  1 * m_scale.y, -1 * m_scale.z },{ 1 * m_scale.x, -1 * m_scale.y, -1 * m_scale.z }, //-Z face
+	};
+
+	int pi = 0;
+	for (int i = 0; i < 6; ++i)
+	{
+		result = m_geometry->addPolygon(m_directOcclusion, m_reverbOcclusion, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
+	}
 }
 
 void Cube::Update()
@@ -27,23 +40,4 @@ void Cube::Update()
 	
 
 	BaseObject::Update();
-}
-
-void Cube::CreateVerts()
-{
-	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
-	{
-		{  1, -1, -1 },{  1, -1,  1 },{  1,  1,  1 },{  1,  1, -1 }, //+X face
-		{ -1, -1, -1 },{ -1, -1,  1 },{ -1,  1,  1 },{ -1,  1, -1 }, //-X face
-		{ -1,  1, -1 },{  1,  1, -1 },{  1,  1,  1 },{ -1,  1,  1 }, //+Y face
-		{ -1, -1, -1 },{  1, -1, -1 },{  1, -1,  1 },{ -1, -1,  1 }, //-Y face
-		{ -1, -1,  1 },{ -1,  1,  1 },{  1,  1,  1 },{  1,  1, -1 }, //+Z face
-		{ -1, -1, -1 },{ -1,  1, -1 },{  1,  1, -1 },{  1, -1, -1 }, //-Z face
-	};
-
-	int pi = 0;
-	for (int i = 0; i < 6; ++i)
-	{
-		result = m_geometry->addPolygon(m_directOcclusion, m_reverbOcclusion, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
-	}
 }
