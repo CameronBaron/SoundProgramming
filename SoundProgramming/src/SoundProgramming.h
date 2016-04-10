@@ -8,6 +8,7 @@
 #include "tinyobjloader\tiny_obj_loader.h"
 #include "OBJLoader.h"
 #include <vector>
+#include "RenderObjects\OpenBox.h"
 
 class SoundProgramming : public Application
 {
@@ -16,8 +17,9 @@ public:
     virtual void shutdown();
     virtual bool update();
     virtual void draw();
+	void DrawGUI();
 
-	void CreateCommonSounds();	// Sounds that wont get released after being used once.
+	void SongFilePaths();
 
 	void UpdateGUI();
 
@@ -37,9 +39,6 @@ public:
 	FMOD_VECTOR m_listenerForward;
 	FMOD_VECTOR m_listenerUp;
 
-	FMOD_VECTOR m_FMChannelPos = { 0, 0, 0 };
-	FMOD_VECTOR m_FMChannelVel = { 0, 0, 0 };
-
 	float gunCooldown = 2;
 	float guntimer = 0;
 	float lastFrameTime = 0;
@@ -48,22 +47,11 @@ public:
 	bool GUIopened = true;
 	bool keypress = false;
 
-	SoundClass* bgSound;
-	float sound1volume = 1;
-	vec3 sound1Pos;
-	bool sound1moving = true;
+	const char* songFiles[5];
+	FMOD_REVERB_PROPERTIES soundProps[5];
 
-	SoundClass* bgSound2;
-	float sound2volume = 1;
-	FMOD_VECTOR sound2Pos;
-	bool sound2moving = false;
-
-	Cube* box;
-	Cube* floor;
-
-	Room* room;
-
-	vec4 WHITE = vec4(1, 1, 1, 1);
+	OpenBox* room;
+	float a = 1;
 };
 
 #endif //CAM_PROJ_H_

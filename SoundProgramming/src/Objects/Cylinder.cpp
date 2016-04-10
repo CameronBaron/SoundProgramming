@@ -14,7 +14,7 @@ Cylinder::~Cylinder()
 
 void Cylinder::Update()
 {
-	Gizmos::addCylinderFilled(m_position, m_radius, m_halfLength, 20, m_color, &m_modelMatrix);
+	Gizmos::addCylinderFilled(m_position, m_radius, m_halfLength, 20, m_color, &m_localMatrix);
 
 	BaseObject::Update();
 }

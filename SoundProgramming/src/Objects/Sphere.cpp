@@ -13,7 +13,7 @@ Sphere::~Sphere()
 
 void Sphere::Update()
 {
-	Gizmos::addSphere(m_position, m_radius, 20, 20, m_color, &m_modelMatrix);
+	Gizmos::addSphere(m_position, m_radius, 20, 20, m_color, &m_localMatrix);
 
 	BaseObject::Update();
 }

@@ -8,14 +8,11 @@ out vec3 vPosition;
 out vec3 vNormal;
 out vec2 vTexcoord;
 
-uniform mat4 ProjectionView;
-//uniform mat4 ModelMatrix;
+uniform mat4 MVP;
 
 void main()
 {
-	vNormal = Normal;
-	vTexcoord = Texcoord;
 	vPosition = Position;
 
-	gl_Position = ProjectionView * vec4(Position, 1); 
+	gl_Position = MVP * vec4(Position, 1); 
 }

@@ -160,7 +160,6 @@ void FlyCamera::update(float dt)
 				transform[3] = world[3];
 				world = transform;
 				view = glm::inverse(world);
-				view_proj = proj * view;
 			}
 			m_clicked_down = true;
 		}

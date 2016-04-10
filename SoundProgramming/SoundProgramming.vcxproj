@@ -11,6 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\RenderObjects\Node.h" />
+    <ClInclude Include="src\RenderObjects\OpenBox.h" />
+    <ClInclude Include="src\RenderObjects\Rect.h" />
+    <ClInclude Include="src\RenderObjects\RenderObject.h" />
     <ClInclude Include="src\Objects\Room.h" />
     <ClInclude Include="src\Objects\Cube.h" />
     <ClInclude Include="src\Objects\Cylinder.h" />
@@ -34,6 +38,11 @@
     <ClInclude Include="src\tinyobjloader\tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\RenderObjects\Node.cpp" />
+    <ClCompile Include="src\RenderObjects\OpenBox.cpp" />
+    <ClCompile Include="src\RenderObjects\Rect.cpp" />
+    <ClCompile Include="src\RenderObjects\RenderObject.cpp" />
+    <ClCompile Include="src\Objects\BaseObject.cpp" />
     <ClCompile Include="src\Objects\Room.cpp" />
     <ClCompile Include="src\Objects\Cube.cpp" />
     <ClCompile Include="src\Objects\Cylinder.cpp" />

@@ -42,36 +42,10 @@ bool SoundProgramming::startup()
 		return false;
 	}
 
-	box = new Cube(vec3(5, 0, 0), vec3(1, 2, 1), WHITE, 1, 1, true);
-	floor = new Cube(vec3(0, -0.5f, 0), vec3(15, 0.5f, 15), vec4(0.25f, 0.25f, 0.25f, 1), 1, 1, true);
-	result = m_pFModSystem->createGeometry(6, 24, &box->m_geometry);
-	result = m_pFModSystem->createGeometry(6, 24, &floor->m_geometry);
+	SongFilePaths();
 
-	room = new Room(vec3(5), 2.22f, 1, 1, vec4(0.9f, 0.1f, 0.1f, 1), 1, 5);
+	room = new OpenBox(vec3(5), vec3(1), 0.5f, 0.5f, 0.2f, 5, songFiles[1]);
 	room->Init(m_pFModSystem);
-
-	m_pFModSystem->createReverb3D(&m_reverb3D);
-	FMOD_VECTOR reverbPos = { -5, 0, 0 };
-	result = m_reverb3D->set3DAttributes(&reverbPos, 10, 20);
-	FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_AUDITORIUM;
-	m_reverb3D->setProperties(&prop);
-
-	box->Init();
-	floor->Init();
-
-	/* TODO:				23/03/16 11:00am
-	for each(BaseObject bo in objectlist)
-	{
-		result = m_pFModSystem->createGeometry(6,24, &bo->geometry);
-		bo->Init();
-	}
-	*/
-
-	CreateCommonSounds();
-	result = m_pFModSystem->createChannelGroup("Music Channel Group", &m_channelGroupMusic);
-
-	bgSound->Play();
-	bgSound2->Play();
 
 #pragma endregion
 	
@@ -98,33 +72,7 @@ bool SoundProgramming::update()
     dt = (float)glfwGetTime() - lastFrameTime;
 	lastFrameTime = (float)glfwGetTime();
 
-#pragma region Gizmos
-	Gizmos::clear();
-
-    vec4 white(1);
-    vec4 black(0, 0, 0, 1);
-    for (int i = 0; i <= 20; ++i)
-    {
-        Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
-        Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
-    }
-	Gizmos::addSphere(vec3(-5, 0, 0), 5, 10, 10, vec4(0));
-
-	box->Update();
-	floor->Update();
-	
-#pragma endregion
-	
-    m_camera.update(dt);
-
-	room->Update();
-
 #pragma region FMOD
-	/*
-	foreach (sound in list of sounds)
-		if (sound.isplaying)
-			sound.update();
-	*/
 
 	m_listenerPosition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
 	m_listenerVelocity = { 0, 0, 0 };
@@ -132,25 +80,6 @@ bool SoundProgramming::update()
 	m_listenerUp = { m_camera.up.x, m_camera.up.y, m_camera.up.z };
 	result = m_pFModSystem->set3DListenerAttributes
 		(0, &m_listenerPosition, &m_listenerVelocity, &m_listenerForward, &m_listenerUp);
-
-	if(sound1moving)
-		bgSound->m_channelPosition = { sinf((float)glfwGetTime()) * 5, 2, cos((float)glfwGetTime()) * 5 };
-	else
-	{
-	}
-
-	if(sound2moving)
-		bgSound2->m_channelPosition = { sound2Pos };
-	else
-		bgSound2->m_channelPosition = { 0, -2, 0 };
-	
-	FMOD_REVERB_PROPERTIES prop = FMOD_PRESET_AUDITORIUM;
-	m_reverb3D->setProperties(&prop);
-	
-	bgSound->m_channelRef->setVolume(sound1volume);
-	bgSound->Update();
-	bgSound2->m_channelRef->setVolume(sound2volume);
-	bgSound2->Update();
 
 	//guntimer += dt;
 	//if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
@@ -162,7 +91,25 @@ bool SoundProgramming::update()
 
 	result = m_pFModSystem->update();
 #pragma endregion
+
+#pragma region Gizmos
+	Gizmos::clear();
+
+    vec4 white(1);
+    vec4 black(0, 0, 0, 1);
+    for (int i = 0; i <= 20; ++i)
+    {
+        Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
+        Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
+    }
 	
+#pragma endregion
+
+	//room->m_rotation = glm::rotate(room->m_rotation, dt, vec3(1, 0, 0));
+	
+	room->Update();
+	
+    m_camera.update(dt);	
 	
     return true;
 }
@@ -172,9 +119,11 @@ void SoundProgramming::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	ImGui_ImplGlfwGL3_NewFrame();
 
-    Gizmos::draw(m_camera.proj, m_camera.view);
+	room->Draw(&m_camera);
 
-	UpdateGUI();
+    Gizmos::draw(m_camera.proj, m_camera.view);
+	DrawGUI();
+
 	ImGui::Render();
     glfwSwapBuffers(m_window);
     glfwPollEvents();
@@ -182,23 +131,28 @@ void SoundProgramming::draw()
 	// Calls Render for ImGui
 }
 
-void SoundProgramming::CreateCommonSounds()
+void SoundProgramming::DrawGUI()
 {
-	bgSound = new SoundClass(&m_pFModSystem, m_channelGroupMusic, m_FMChannelPos, "./data/audio/background_music.ogg");
-	bgSound->m_loop = true;
+	float gui_alpha = -1;
+	bool gui_opened = true;
 
-	bgSound2 = new SoundClass(&m_pFModSystem, m_channelGroupMusic, m_FMChannelPos, "./data/audio/AMemoryAway.ogg");
-	bgSound->m_loop = true;
-}
-
-void SoundProgramming::UpdateGUI()
-{
-	ImGui::Begin("Sound Controls");
-
-		ImGui::DragFloat("Sound1 Volume", &sound1volume, 0.02f, 0.0f, 10);
-		ImGui::Checkbox("Auto rotate", &sound1moving);
-
-		ImGui::DragFloat("Sound2 Volume", &sound2volume, 0.2f, 0.0f, 3);
+	ImGui::Begin("Main WIndow", &gui_opened, ImVec2(350, 350), gui_alpha, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+	room->DrawGUI();
 
 	ImGui::End();
+}
+
+void SoundProgramming::SongFilePaths()
+{
+	songFiles[0] = "./data/audio/evironmental_effect_01.ogg";
+	songFiles[1] = "./data/audio/background_music.ogg";
+	songFiles[2] = "./data/audio/environmental_effect_02.ogg";
+	songFiles[3] = "";
+	songFiles[4] = "./data/audio/AMemoryAway.ogg";
+
+	soundProps[0] = FMOD_PRESET_UNDERWATER;
+	soundProps[1] = FMOD_PRESET_CITY;
+	soundProps[2] = FMOD_PRESET_HANGAR;
+	soundProps[3] = FMOD_PRESET_PADDEDCELL;
+	soundProps[4] = FMOD_PRESET_ALLEY;
 }

@@ -71,6 +71,24 @@ public:
 	float m_minDistance;			// Within the Min distance the AudioSource will cease to grow louder.
 	float m_maxDistance;			// (Logarithmic rolloff) The distance the sound stops attenuating at.
 
+// Frequency Analysis
+	int m_sampleSize = 64;
+	float* specLeft;
+	float* specRight;
+
+
+	FMOD::DSP* dsp_reverb;
+	FMOD::DSP* dsp_tail;
+	FMOD::DSP* dsp_fft;
+	FMOD::DSP* channel_dsp_head;
+
+	FMOD_DSP_PARAMETER_FFT* fftParameter;
+	int windowSize = 520;
+	float val;
+	unsigned int len;
+	char s[256];
+
+
 private:
 
 };

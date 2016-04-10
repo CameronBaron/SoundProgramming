@@ -4,44 +4,49 @@
 #include "../Gizmos.h"
 #include <fmod.hpp>
 #include <fmod_errors.h>
+#include <vector>
 
 using namespace glm;
+
+struct Vertex
+{
+	vec3 position;
+	vec2 texcoord;
+	vec3 normal;
+};
 
 class BaseObject
 {
 public:
-	BaseObject(vec3 a_pos, vec3 a_scale, vec4 a_color, float a_occlusion, float a_reverb) : m_position(a_pos), m_scale(a_scale), m_directOcclusion(a_occlusion), m_reverbOcclusion(a_reverb) { m_color = a_color; }
-	~BaseObject() {}
+	BaseObject(vec3 a_pos, vec3 a_scale, vec4 a_color);
+	BaseObject(vec3 a_pos, vec3 a_scale, vec4 a_color, float a_occlusion, float a_reverb);
+	~BaseObject();
 
-	virtual void Init() {}
-	virtual void Update() 
-	{ 
-		// Update geometry position here
-		FMOD_VECTOR tempPos = { m_position.x, m_position.y, m_position.z };
-		m_geometry->setPosition(&tempPos);
+	static BaseObject& GetRoot();
+	void SetParent(BaseObject* parent);
+	void AddChild(BaseObject* childToAdd);
+	void RemoveChild(BaseObject* childToRemove);
 
-		FMOD_VECTOR fscale = { m_scale.x, m_scale.y, m_scale.z };
-		m_geometry->setScale(&fscale);
-		UpdateModelMatrix(); 
-	}
+	virtual void Init();
+	virtual void Update();
 
-	const vec3 GetPosition() { m_position.x = m_modelMatrix[3][0]; m_position.y = m_modelMatrix[3][1]; m_position.z = m_modelMatrix[3][2]; return m_position; }
-	void SetPosition(vec3 a_pos) { m_position = a_pos; UpdateModelMatrix(); }
-	void SetPosition(float x, float y, float z) { m_position.x = x; m_position.y = y; m_position.z = z; UpdateModelMatrix(); }
+	const vec3 GetPosition();
+	void SetPosition(vec3 a_pos);
+	void SetPosition(float x, float y, float z);
 
-	const quat GetRotation() { return m_rotation; }
-	void SetRotation(quat a_rot) { m_rotation = a_rot; UpdateModelMatrix(); }
+	const vec3 GetRotation() { return m_rotation; }
+	void SetRotation(vec3 a_rot);
 
 	const vec3 GetScale() { return m_scale; }
-	void SetScale(vec3 a_scale) { m_scale = a_scale; UpdateModelMatrix(); }
-	void SetScale(float x, float y, float z) { m_scale.x = x; m_scale.y = y; m_scale.z = z; UpdateModelMatrix(); }
+	void SetScale(vec3 a_scale);
+	void SetScale(float x, float y, float z);
 
 	const vec4 GetColor() { return m_color; }
-	void SetColor(vec4 a_color) { m_color = a_color; }
-	void SetColor(float x, float y, float z, float w) { m_color.x = x; m_color.y = y; m_color.z = z; m_color.w = w; }
+	void SetColor(vec4 a_color);
+	void SetColor(float x, float y, float z, float w);
 
-	void UpdateModelMatrix() { m_modelMatrix = glm::scale(vec3(m_scale)) * glm::toMat4(m_rotation) *  glm::translate(m_position); }
-	const mat4 GetModelMatrix() { return m_modelMatrix; }
+	void UpdateWorldMatrix();
+	const mat4 GetWorldMatrix() { return m_localMatrix; }
 
 	std::string m_name;
 	FMOD::Geometry* m_geometry;
@@ -50,14 +55,21 @@ public:
 
 protected:
 	vec3 m_position;
-	quat m_rotation;
+	vec3 m_rotation;
 	vec3 m_scale;
 	vec4 m_color;
 
-	mat4 m_modelMatrix;
+	BaseObject(bool root);
+
+	BaseObject* m_parent;
+	std::vector<BaseObject*> m_children;
+	mat4 m_localMatrix;
+	mat4 m_worldMatrix;
+	mat4 m_rotationMat = mat4(1);
 
 	float m_directOcclusion;
 	float m_reverbOcclusion;
 	bool m_doubleSided;
+
 };
 
