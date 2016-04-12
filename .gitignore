@@ -1,5 +1,5 @@
-soundprogramming/soundprogramming/Debug/
-soundprogramming/soundprogramming.sdf
-soundprogramming/Debug/
-soundprogramming/soundprogramming/x64/
-soundprogramming/soundprogramming.VC.opendb
+**/Debug/**
+**/*.sdf
+**/x64/**
+**/*.VC.opendb
+**/.vs/**
