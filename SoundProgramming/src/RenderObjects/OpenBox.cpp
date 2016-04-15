@@ -16,10 +16,12 @@ OpenBox::~OpenBox()
 
 void OpenBox::Init(FMOD::System* a_FMsystem)
 {
+	properties = new const char*[24];
+	InitReverbPresets();
 
 	m_reverbInnerRadius *= m_scale.x;
 	m_reverbOuterRadius *= m_scale.x;
-	float thickness = 0.2f;
+	float thickness = 0.01f;
 	float side = 8;
 
 	m_walls[0] = new Rect(std::string("Left Wall"),   glm::vec3(-m_reverbOuterRadius, 0, 0), glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Left
@@ -41,7 +43,7 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	m_sound->Play();
 	FMOD_VECTOR pos = { m_position.x, m_position.y, m_position.z };
 	m_sound->m_channelPosition = pos;
-	m_sound->m_channelRef->setVolume(10);
+	m_sound->m_channelRef->setVolume(m_volume);
 
 	m_reverb->set3DAttributes(&m_reverbPosition, m_reverbInnerRadius, m_reverbOuterRadius);
 	m_reverb->setProperties(&m_reverbProps);
@@ -53,10 +55,12 @@ void OpenBox::Update()
 
 	FMOD_VECTOR pos = { m_position.x, m_position.y, m_position.z };
 	m_sound->m_channelPosition = pos;
+	m_sound->m_channelRef->setVolume(m_volume);
 
+	m_reverb->setProperties(&m_reverbProps);
 	m_sound->Update();
 	
-	Gizmos::addSphere(m_position, m_reverbOuterRadius, 20, 20, glm::vec4(0), &m_localMatrix);
+	//Gizmos::addSphere(m_position, m_reverbOuterRadius, 20, 20, glm::vec4(0), &m_localMatrix);
 }
 
 void OpenBox::Draw(Camera* a_camera)
@@ -82,10 +86,43 @@ void OpenBox::DrawGUI()
 	{
 		ImGui::DragFloat("Inner Radius", &m_reverbInnerRadius, 1, 0, m_reverbOuterRadius);
 		ImGui::DragFloat("Outer Radius", &m_reverbOuterRadius, 1, m_reverbInnerRadius);
-		//ImGui::ListBox("Reverb Properties", 0, )
+		//ImGui::ListBox("Reverb Properties", 0, properties, 25);
 	}
 	if (ImGui::CollapsingHeader("Sound Source"))
 	{
-
+		ImGui::DragFloat("Volume", &m_volume, 0.1f, 0.0f, 30.0f);
+		ImGui::Checkbox("Disable Reverb", &m_sound->dsp_reverbBypass);
+		ImGui::Checkbox("Disable Chorus", &m_sound->dsp_chorusBypass);
 	}
+
+	// ImGui::End already called in SounProgramming.ccp
+}
+
+void OpenBox::InitReverbPresets()
+{
+	properties [0] = "Generic";
+	properties [1] = "Generic";
+	properties [2] = "Generic";
+	properties [3] = "Generic";
+	properties [4] = "Generic";
+	properties [5] = "Generic";
+	properties [6] = "Generic";
+	properties [7] = "Generic";
+	properties [8] = "Generic";
+	properties [9] = "Generic";
+	properties[10] = "Generic";
+	properties[11] = "Generic";
+	properties[12] = "Generic";
+	properties[13] = "Generic";
+	properties[14] = "Generic";
+	properties[15] = "Generic";
+	properties[16] = "Generic";
+	properties[17] = "Generic";
+	properties[18] = "Generic";
+	properties[19] = "Generic";
+	properties[20] = "Generic";
+	properties[21] = "Generic";
+	properties[22] = "Generic";
+	properties[23] = "Generic";
+	properties[24] = "Generic";
 }

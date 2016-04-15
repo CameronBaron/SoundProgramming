@@ -88,7 +88,6 @@ void Rect::Init()
 		result = m_geometry->addPolygon(m_directOcclusion, m_reverbOcclusion, 1, 4, cube + (4 * i), &pi); // pointer arithmetic to get face i
 	}
 
-
 	RenderObject::Init();
 }
 
@@ -96,14 +95,24 @@ void Rect::Update()
 {
 	RenderObject::Update();
 
+	// Update FMOD geometry position and scale incase it has changed
 	FMOD_VECTOR tempPos = { m_worldMatrix[3].x, m_worldMatrix[3].y, m_worldMatrix[3].z };
 	m_geometry->setPosition(&tempPos);
 
 	FMOD_VECTOR fscale = { m_scale.x, m_scale.y, m_scale.z };
 	m_geometry->setScale(&fscale);
 
-	Gizmos::addAABB(glm::vec3(m_worldMatrix[3].x, m_worldMatrix[3].y, m_worldMatrix[3].z), m_size * 0.5f, glm::vec4( 1, 0, 0, 0));
+	m_geometry->setRotation(&m_geoForward, &m_geoUp);
 
+	// Add bounding box for visual guide
+	Gizmos::addAABB(glm::vec3(m_worldMatrix[3].x, m_worldMatrix[3].y, m_worldMatrix[3].z), m_size * 0.5f, glm::vec4( 1, 0, 0, 0), &m_worldMatrix);
+
+	// Update forward and up vectors to use with FMOD rotation
+	glm::vec3 front = glm::vec3(m_worldMatrix[2].x, m_worldMatrix[2].y, m_worldMatrix[2].z);
+	m_geoForward = { front.x, front.y, front.z };
+	glm::vec3 right = glm::vec3( m_worldMatrix[0].x, m_worldMatrix[0].y, m_worldMatrix[0].z );
+	glm::vec3 up = glm::cross(front, right);
+	m_geoUp = { up.x, up.y, up.z };
 }
 
 

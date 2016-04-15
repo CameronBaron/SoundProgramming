@@ -18,6 +18,6 @@ void main()
 	//FragColor = texture(material, vTexcoord);
 	//FragColor.rgb *= Ambient;
 	
-	FragColor = vec4( vPosition, 1);
-	//FragColor.rgb *= ambientLight;
+	FragColor = vec4( 0.1f, 0.1f, 0.1f, 1);
+	FragColor.rgb *= ambientLight;
 }

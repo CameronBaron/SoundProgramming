@@ -19,12 +19,15 @@ SoundClass::~SoundClass()
 
 void SoundClass::Update()
 {
+	result = dsp_reverb->setBypass(dsp_chorusBypass);
+	result = dsp_reverb->setBypass(dsp_reverbBypass);
+
 	if (m_isPlaying)
 	{
 		result = m_channelRef->getPosition(&m_time, FMOD_TIMEUNIT_PCM);
 		m_channelRef->set3DAttributes(&m_channelPosition, &m_channelVelocity);
 
-		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 5, 5, glm::vec4(1, 0, 0, 1));
+		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
 	}
 	
 	result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWTYPE, FMOD_DSP_FFT_WINDOW_TRIANGLE);
@@ -62,34 +65,30 @@ void SoundClass::Play()
 		result = (*m_FModSysRef)->getMasterChannelGroup(&m_master_channelGroupRef);
 		result = m_master_channelGroupRef->getDSP(FMOD_CHANNELCONTROL_DSP_TAIL, &dsp_tail);
 		result = dsp_tail->addInput(dsp_reverb);
-		result = dsp_reverb->setActive(true);
-		
-		
+		result = dsp_reverb->setActive(true);		
+
 		result = m_channelRef->getDSP(FMOD_CHANNELCONTROL_DSP_HEAD, &channel_dsp_head);
-		result = channel_dsp_head->setChannelFormat(0, 0, FMOD_SPEAKERMODE_QUAD);
 		result = dsp_reverb->addInput(channel_dsp_head);
 		
-		FMOD::DSPConnection *channel_dsp_head_output_connection;
-		float matrix[4][4] =
-		{   /*                                  FL FR SL SR <- Input signal (columns) */
-			/* row 0 = front left  out    <- */{ 1, 0, 0, 0 },
-			/* row 1 = front right out    <- */{ 0, 1, 0, 0 },
-			/* row 2 = surround left out  <- */{ 0, 0, 1, 0 },
-			/* row 3 = surround right out <- */{ 0, 0, 0, 1 }
-		};
-		result = channel_dsp_head->getOutput(0, 0, &channel_dsp_head_output_connection);
-		result = channel_dsp_head_output_connection->setMixMatrix(&matrix[0][0], 4, 4);
-		
-		result = dsp_reverb->setBypass(true); 
+		result = dsp_reverb->setBypass(dsp_reverbBypass);
 		/* Has the benifit of not disabling all inputs as SetActive would, and reverb process is not called, savinmg CPU */
 #pragma endregion
 
-#pragma region Spectrum Attempt
-		//result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_FFT, &dsp_fft);
-		//result = m_master_channelGroupRef->addDSP(1, dsp_fft);
-		//result = dsp_fft->setActive(true);
+#pragma region Chorus DSP
+		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_CHORUS, &dsp_chorus);
+		result = dsp_tail->addInput(dsp_chorus);
+		result = dsp_chorus->setActive(true);
+		result = dsp_chorus->addInput(channel_dsp_head);
+
+		result = dsp_reverb->setBypass(dsp_chorusBypass);
 #pragma endregion
 
+
+#pragma region Spectrum Attempt
+		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_FFT, &dsp_fft);
+		result = m_master_channelGroupRef->addDSP(1, dsp_fft);
+		result = dsp_fft->setActive(true);
+#pragma endregion
 
 		FMODErrorCheck(result);
 		UnPause();

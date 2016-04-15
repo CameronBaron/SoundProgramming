@@ -38,6 +38,7 @@ public:
 	FMOD_VECTOR m_listenerVelocity;
 	FMOD_VECTOR m_listenerForward;
 	FMOD_VECTOR m_listenerUp;
+	float dopplerLevel = 0;			// Effects all sound pitch depending on listener velocity
 
 	float gunCooldown = 2;
 	float guntimer = 0;

@@ -15,6 +15,7 @@ public:
 	void Update();
 	void Draw(Camera* a_camera);
 	void DrawGUI();
+	void InitReverbPresets();
 
 	Rect* m_walls[5];
 	float m_wallOcclusion = 1;
@@ -26,6 +27,7 @@ public:
 	const char* m_audioFilePath = "";
 
 	SoundClass* m_sound;
+	float m_volume = 1;
 	FMOD_VECTOR m_soundPosition = { 0, 0, 0 };
 	FMOD_VECTOR m_reverbPosition = { 0, 0, 0 };
 	float m_reverbInnerRadius = 1;
@@ -33,6 +35,7 @@ public:
 
 	FMOD::Reverb3D* m_reverb = nullptr;
 	FMOD_REVERB_PROPERTIES m_reverbProps = FMOD_PRESET_GENERIC;
+	const char** properties;
 
 	const char* m_cubeVertShader = "./data/Shaders/shaders.vert";
 	const char* m_cubeFragShader = "./data/Shaders/shaders.frag";

@@ -76,7 +76,7 @@ FlyCamera::FlyCamera(float aspect, float new_speed) : Camera(aspect)
 	pitch = 0;
 	worldUp = vec3(0, 1, 0);
 	position = front = up = right = vec3(0);
-	//UpdateVectors();
+	prev_pos = getPosition();
 }
 
 void FlyCamera::update(float dt)
@@ -172,6 +172,9 @@ void FlyCamera::update(float dt)
 	view = glm::inverse(world);
 	updateViewProj();
 	UpdateVectors();
+	
+	GetVelocity();
+	prev_pos = getPosition();
 }
 
 void FlyCamera::UpdateVectors()
@@ -179,4 +182,16 @@ void FlyCamera::UpdateVectors()
 	front = world[2].xyz * -1;
 	right = world[0].xyz;
 	up = glm::cross(front, right);
+}
+
+void FlyCamera::GetVelocity()
+{
+	vec3 disp = position - prev_pos;
+	float dist = sqrt(disp.x * disp.x + disp.y * disp.y + disp.z * disp.z);
+	if (dist != 0)
+	{
+		m_FMvelocity = disp * (m_speed / dist);
+	}
+	else
+		m_FMvelocity = vec3(0);
 }

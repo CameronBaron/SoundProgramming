@@ -8,7 +8,6 @@ using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
-
 class Camera
 {
 public:
@@ -39,6 +38,7 @@ public:
 	virtual void update(float dt);
 
 	void UpdateVectors();
+	void GetVelocity();
 
 	float m_speed;
 	float sensitivity;
@@ -49,6 +49,8 @@ public:
 	bool m_clicked_down;
 
 	vec3 position, front, up, right, worldUp;
+	vec3 m_FMvelocity;
+	vec3 prev_pos;
 };
 
 #endif //CAMERA_H_

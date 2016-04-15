@@ -44,7 +44,7 @@ bool SoundProgramming::startup()
 
 	SongFilePaths();
 
-	room = new OpenBox(vec3(5), vec3(1), 0.5f, 0.5f, 0.2f, 5, songFiles[1]);
+	room = new OpenBox(vec3(5), vec3(1), 0.5f, 1, 0.2f, 5, songFiles[1]);
 	room->Init(m_pFModSystem);
 
 #pragma endregion
@@ -75,7 +75,7 @@ bool SoundProgramming::update()
 #pragma region FMOD
 
 	m_listenerPosition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
-	m_listenerVelocity = { 0, 0, 0 };
+	m_listenerVelocity = { m_camera.m_FMvelocity.x * dopplerLevel , m_camera.m_FMvelocity.y * dopplerLevel, m_camera.m_FMvelocity.z * dopplerLevel };
 	m_listenerForward = { m_camera.front.x, m_camera.front.y, m_camera.front.z };
 	m_listenerUp = { m_camera.up.x, m_camera.up.y, m_camera.up.z };
 	result = m_pFModSystem->set3DListenerAttributes
@@ -137,6 +137,10 @@ void SoundProgramming::DrawGUI()
 	bool gui_opened = true;
 
 	ImGui::Begin("Main WIndow", &gui_opened, ImVec2(350, 350), gui_alpha, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+	if (ImGui::CollapsingHeader("Listener Options"))
+	{
+		ImGui::DragFloat("Doppler Level", &dopplerLevel, 0.01f, 0.0f, 1.0f);
+	}
 	room->DrawGUI();
 
 	ImGui::End();
