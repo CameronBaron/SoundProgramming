@@ -1,0 +1,15 @@
+Use fft audio info in a shader to create 'Visulisations'
+
+- fftParameter holds float array of all channels (similar to perlin data)
+
+- each channel has a spectrum array (spectrum[32])
+
+- get average of L & R channels to make one array (may want to normalise too)
+
+- use the height of each value to create "bars" for equaliser
+
+Use this for creating a 1D texture with the fft data.
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, bufferwidth, 0, GL_RED, GL_FLOAT, data);
+	
+Then use this to update image rather than creating a new one every frame.
+	glTexSubImage1D();

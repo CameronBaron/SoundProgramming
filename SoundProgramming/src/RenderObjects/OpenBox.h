@@ -34,8 +34,10 @@ public:
 	float m_reverbOuterRadius = 5;
 
 	FMOD::Reverb3D* m_reverb = nullptr;
-	FMOD_REVERB_PROPERTIES m_reverbProps = FMOD_PRESET_GENERIC;
+	FMOD_REVERB_PROPERTIES m_reverbProps = FMOD_PRESET_OFF;
+	FMOD_REVERB_PROPERTIES* reverbs;
 	const char** properties;
+	int currProp;
 
 	const char* m_cubeVertShader = "./data/Shaders/shaders.vert";
 	const char* m_cubeFragShader = "./data/Shaders/shaders.frag";

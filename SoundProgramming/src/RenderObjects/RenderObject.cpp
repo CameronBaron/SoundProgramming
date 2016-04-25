@@ -2,6 +2,28 @@
 #include <string>
 #include <iostream>
 
+using namespace std;
+#define check_gl_error() _check_gl_error(__FILE__,__LINE__)
+
+void _check_gl_error(const char *file, int line) {
+	GLenum err(glGetError());
+
+	while (err != GL_NO_ERROR) {
+		string error;
+
+		switch (err) {
+		case GL_INVALID_OPERATION:      error = "INVALID_OPERATION";      break;
+		case GL_INVALID_ENUM:           error = "INVALID_ENUM";           break;
+		case GL_INVALID_VALUE:          error = "INVALID_VALUE";          break;
+		case GL_OUT_OF_MEMORY:          error = "OUT_OF_MEMORY";          break;
+		case GL_INVALID_FRAMEBUFFER_OPERATION:  error = "INVALID_FRAMEBUFFER_OPERATION";  break;
+		}
+
+		cerr << "GL_" << error.c_str() << " - " << file << ":" << line << endl;
+		err = glGetError();
+	}
+}
+
 RenderObject::RenderObject(std::string a_name, glm::vec3 a_pos, glm::quat a_rot, const char* a_vertShader, const char* a_fragShader, Node* a_parent) :
 	Node(a_pos, a_rot, a_parent), m_name(a_name), m_vertShaderFilePath(a_vertShader), m_fragShaderFilePath(a_fragShader)
 {
@@ -49,26 +71,58 @@ void RenderObject::CreateOpenGLBuffers()
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 
-	glGenVertexArrays(1, &m_VAO);
-	glBindVertexArray(m_VAO);
+	//glGenVertexArrays(1, &m_VAO);
+	//glBindVertexArray(m_VAO);
 
 	// Generate GL buffers
-	glGenBuffers(1, &m_IBO);
+	//glGenBuffers(1, &m_IBO);
 	glGenBuffers(1, &m_VBO);
 
 	// create and bind buffers to a vertex array object
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+
+	glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, )
+
+
+#pragma region SubData Attempt
+
+	int vertArraySize = sizeof(GLfloat) * m_vertexCount;
+	int normalArraySize = sizeof(GLfloat) * m_normalCount;
+	int texArraySize = sizeof(GLfloat) * m_texcoordCount;
+	int totalArraySize = vertArraySize + normalArraySize + texArraySize;
+	//glBufferData(GL_ARRAY_BUFFER, vertArraySize + normalArraySize + texArraySize, (GLvoid*)0, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, totalArraySize, (GLvoid*)arrays, GL_DYNAMIC_DRAW);
+
+	//glBufferSubData(GL_ARRAY_BUFFER, 0, vertArraySize, m_vertBuffer); // Position
+	//check_gl_error();
+	//glBufferSubData(GL_ARRAY_BUFFER, vertArraySize, normalArraySize, m_normalBuffer); // Normal
+	//glBufferSubData(GL_ARRAY_BUFFER, vertArraySize + normalArraySize, texArraySize, m_texcoordBuffer); // Texcoord
+
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0); // Position
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)vertArraySize); // Normal
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT), (GLvoid*)(vertArraySize + normalArraySize)); // Texcoord
+	check_gl_error();
+
+#pragma endregion
+
+
+	/*
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertexCount, m_vertices, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indicesCount, m_indices, GL_STATIC_DRAW);
 
 	glEnableVertexAttribArray(0); // Position
-	//glEnableVertexAttribArray(1); // Texcoord
-	//glEnableVertexAttribArray(2); // Normal
+	glEnableVertexAttribArray(1); // Texcoord
+	glEnableVertexAttribArray(2); // Normal
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (char*)0);
-	//glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-	//glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
+	*/
 
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -77,13 +131,14 @@ void RenderObject::CreateOpenGLBuffers()
 
 void RenderObject::DrawElements()
 {
-	glUseProgram(m_programID);
-	glBindVertexArray(m_VAO);
+	glBindVertexArray(0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
-	glDrawElements(GL_TRIANGLES, m_indicesCount, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, 36);
 
-	//glBindVertexArray(0);
-	//glUseProgram(0);
+	glBindVertexArray(0);
+	glUseProgram(0);
 }
 
 //void RenderObject::CalculateNormals()

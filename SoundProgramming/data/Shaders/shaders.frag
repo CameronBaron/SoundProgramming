@@ -8,7 +8,7 @@ out vec4 FragColor;
 
 uniform sampler2D material;
 
-uniform vec3 ambientLight = vec3(0.75f, 0.75f, 0.75f);
+uniform vec3 ambientLight = vec3(0.75, 0.75, 0.75);
 
 void main()
 {
@@ -18,6 +18,6 @@ void main()
 	//FragColor = texture(material, vTexcoord);
 	//FragColor.rgb *= Ambient;
 	
-	FragColor = vec4( 0.1f, 0.1f, 0.1f, 1);
-	FragColor.rgb *= ambientLight;
+	FragColor = vec4(vTexcoord, 1, 1);
+	//FragColor.rgb *= ambientLight;
 }

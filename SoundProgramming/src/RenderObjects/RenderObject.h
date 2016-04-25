@@ -30,10 +30,17 @@ public:
 	const char* m_vertShaderFilePath;
 	const char* m_fragShaderFilePath;
 
-	float* m_vertices;
+	float* m_vertBuffer;
 	unsigned int m_vertexCount;
 	unsigned int* m_indices;
 	unsigned int m_indicesCount;
+
+	float* m_texcoordBuffer;
+	unsigned int m_texcoordCount;
+	float* m_normalBuffer;
+	unsigned int m_normalCount;
+	float* arrays;
+	unsigned int arraySize;
 
 
 protected:

@@ -44,7 +44,7 @@ bool SoundProgramming::startup()
 
 	SongFilePaths();
 
-	room = new OpenBox(vec3(5), vec3(1), 0.5f, 1, 0.2f, 5, songFiles[1]);
+	room = new OpenBox(vec3(0, 0, 0), vec3(1), 1, 1, 3, 7, songFiles[1]);
 	room->Init(m_pFModSystem);
 
 #pragma endregion

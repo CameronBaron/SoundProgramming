@@ -76,18 +76,14 @@ public:
 	float* specLeft;
 	float* specRight;
 
-
 	FMOD::DSP* dsp_reverb;
 	bool dsp_reverbBypass = true;
-	FMOD::DSP* dsp_chorus;
-	bool dsp_chorusBypass = true;
 	FMOD::DSP* dsp_tail;
 	FMOD::DSP* dsp_fft;
 	FMOD::DSP* channel_dsp_head;
 
 	FMOD_DSP_PARAMETER_FFT* fftParameter;
-	int windowSize = 520;
-	float val;
+	float* fftHeights;
 	unsigned int len;
 	char s[256];
 

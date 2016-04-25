@@ -13,6 +13,8 @@ uniform mat4 MVP;
 void main()
 {
 	vPosition = Position;
+	vTexcoord = Texcoord;
+	vNormal = Normal;
 
 	gl_Position = MVP * vec4(Position, 1); 
 }

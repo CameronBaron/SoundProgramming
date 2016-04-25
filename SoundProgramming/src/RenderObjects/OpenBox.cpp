@@ -17,18 +17,26 @@ OpenBox::~OpenBox()
 void OpenBox::Init(FMOD::System* a_FMsystem)
 {
 	properties = new const char*[24];
-	InitReverbPresets();
+	reverbs = new FMOD_REVERB_PROPERTIES[24];
 
-	m_reverbInnerRadius *= m_scale.x;
-	m_reverbOuterRadius *= m_scale.x;
 	float thickness = 0.01f;
-	float side = 8;
+	float side = 4;
+	m_reverbInnerRadius;
+	m_reverbOuterRadius;
 
-	m_walls[0] = new Rect(std::string("Left Wall"),   glm::vec3(-m_reverbOuterRadius, 0, 0), glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Left
-	m_walls[1] = new Rect(std::string("Right Wall"),  glm::vec3( m_reverbOuterRadius, 0, 0), glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Right
-	m_walls[2] = new Rect(std::string("Top Wall"),	  glm::vec3(0,  m_reverbOuterRadius, 0), glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Top
-	m_walls[3] = new Rect(std::string("Bottom Wall"), glm::vec3(0, -m_reverbOuterRadius, 0), glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Back
-	m_walls[4] = new Rect(std::string("Back Wall"),   glm::vec3(0, 0, -m_reverbOuterRadius), glm::vec3(side, side, thickness), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Bottom
+	//glm::vec3(thickness, side, side)
+	//glm::vec3(thickness, side, side)
+	//glm::vec3(side, thickness, side)
+	//glm::vec3(side, thickness, side)
+	//
+	//glm::vec3(side, side, thickness)
+
+	m_walls[0] = new Rect(std::string("Left Wall"),   glm::vec3(-m_reverbInnerRadius, 0, 0), glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Left
+	m_walls[1] = new Rect(std::string("Right Wall"),  glm::vec3(m_reverbInnerRadius, 0, 0),  glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Right
+	m_walls[2] = new Rect(std::string("Top Wall"),	  glm::vec3(0, m_reverbInnerRadius, 0),  glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Top
+	m_walls[3] = new Rect(std::string("Bottom Wall"), glm::vec3(0, -m_reverbInnerRadius, 0), glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Bottom
+	// Display audio visualisation on this one, will need custom shaders
+	m_walls[4] = new Rect(std::string("Back Wall"),   glm::vec3(0, 0, -m_reverbInnerRadius), glm::vec3(side, side, thickness), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Back
 
 	for (int i = 0; i < 5; ++i)
 	{
@@ -45,22 +53,29 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	m_sound->m_channelPosition = pos;
 	m_sound->m_channelRef->setVolume(m_volume);
 
-	m_reverb->set3DAttributes(&m_reverbPosition, m_reverbInnerRadius, m_reverbOuterRadius);
+	a_FMsystem->createReverb3D(&m_reverb);
+	m_reverb->set3DAttributes(&pos, m_reverbInnerRadius, m_reverbOuterRadius);
 	m_reverb->setProperties(&m_reverbProps);
+	InitReverbPresets();
 }
 
 void OpenBox::Update()
 {
+	m_rotation = glm::quat(1,20,1,1);
 	Node::Update();
+
+	m_rotation = glm::quat(1, 1, 1, 1);
 
 	FMOD_VECTOR pos = { m_position.x, m_position.y, m_position.z };
 	m_sound->m_channelPosition = pos;
 	m_sound->m_channelRef->setVolume(m_volume);
-
+	
+	m_reverb->set3DAttributes(&pos, m_reverbInnerRadius, m_reverbOuterRadius);
 	m_reverb->setProperties(&m_reverbProps);
 	m_sound->Update();
 	
-	//Gizmos::addSphere(m_position, m_reverbOuterRadius, 20, 20, glm::vec4(0), &m_localMatrix);
+	//Gizmos::addSphere(m_position, m_reverbInnerRadius, 20, 20, glm::vec4(0,0,0,0.5f), &m_localMatrix);
+	//Gizmos::addSphere(m_position, m_reverbOuterRadius, 20, 20, glm::vec4(0,0,0,0.5f), &m_localMatrix);
 }
 
 void OpenBox::Draw(Camera* a_camera)
@@ -81,48 +96,78 @@ void OpenBox::DrawGUI()
 	if (ImGui::CollapsingHeader("Room 1"))
 	{
 		ImGui::DragFloat3("Position", &m_position[0]);
-	}
-	if (ImGui::CollapsingHeader("Reverb Zone"))
-	{
-		ImGui::DragFloat("Inner Radius", &m_reverbInnerRadius, 1, 0, m_reverbOuterRadius);
-		ImGui::DragFloat("Outer Radius", &m_reverbOuterRadius, 1, m_reverbInnerRadius);
-		//ImGui::ListBox("Reverb Properties", 0, properties, 25);
-	}
-	if (ImGui::CollapsingHeader("Sound Source"))
-	{
-		ImGui::DragFloat("Volume", &m_volume, 0.1f, 0.0f, 30.0f);
-		ImGui::Checkbox("Disable Reverb", &m_sound->dsp_reverbBypass);
-		ImGui::Checkbox("Disable Chorus", &m_sound->dsp_chorusBypass);
-	}
+		if (ImGui::CollapsingHeader("Reverb Zone"))
+		{
+			ImGui::DragFloat("Inner Radius", &m_reverbInnerRadius, 1, 0.0f, m_reverbOuterRadius);
+			ImGui::DragFloat("Outer Radius", &m_reverbOuterRadius, 1, m_reverbInnerRadius, 50.0f);
 
-	// ImGui::End already called in SounProgramming.ccp
+			// Reverb properties list box
+			if (ImGui::ListBox("Reverb Properties", &currProp, properties, 24))
+			{
+				m_reverbProps = reverbs[currProp];
+			}
+		}
+		ImGui::TextColored(ImVec4(0,1,1,1),"Sound Source");
+		{
+			ImGui::DragFloat("Volume", &m_volume, 0.01f, 0.0f, 30.0f);
+			ImGui::Checkbox("Disable Reverb", &m_sound->dsp_reverbBypass);
+		}
+	}
+	
+	
+
+	// ImGui::End already called in SoundProgramming.ccp
 }
 
 void OpenBox::InitReverbPresets()
 {
-	properties [0] = "Generic";
+	properties [0] = "Off";
 	properties [1] = "Generic";
-	properties [2] = "Generic";
-	properties [3] = "Generic";
-	properties [4] = "Generic";
-	properties [5] = "Generic";
-	properties [6] = "Generic";
-	properties [7] = "Generic";
-	properties [8] = "Generic";
-	properties [9] = "Generic";
-	properties[10] = "Generic";
-	properties[11] = "Generic";
-	properties[12] = "Generic";
-	properties[13] = "Generic";
-	properties[14] = "Generic";
-	properties[15] = "Generic";
-	properties[16] = "Generic";
-	properties[17] = "Generic";
-	properties[18] = "Generic";
-	properties[19] = "Generic";
-	properties[20] = "Generic";
-	properties[21] = "Generic";
-	properties[22] = "Generic";
-	properties[23] = "Generic";
-	properties[24] = "Generic";
+	properties [2] = "Padded Cell";
+	properties [3] = "Room";
+	properties [4] = "Bathroom";
+	properties [5] = "LivingRoom";
+	properties [6] = "Stoneroom";
+	properties [7] = "Auditorium";
+	properties [8] = "Concert Hall";
+	properties [9] = "Cave";
+	properties[10] = "Arena";
+	properties[11] = "Hanger";
+	properties[12] = "Carpetted Hallway";
+	properties[13] = "Hallway";
+	properties[14] = "Stone Corridor";
+	properties[15] = "Alley";
+	properties[16] = "Forest";
+	properties[17] = "City";
+	properties[18] = "Mountains";
+	properties[19] = "Quarry";
+	properties[20] = "Plain";
+	properties[21] = "Parking Lot";
+	properties[22] = "Sewer Pipe";
+	properties[23] = "Underwater";
+
+	reverbs [0] = FMOD_PRESET_OFF;
+	reverbs [1] = FMOD_PRESET_GENERIC;
+	reverbs [2] = FMOD_PRESET_PADDEDCELL;
+	reverbs [3] = FMOD_PRESET_ROOM;
+	reverbs [4] = FMOD_PRESET_BATHROOM;
+	reverbs [5] = FMOD_PRESET_LIVINGROOM;
+	reverbs [6] = FMOD_PRESET_STONEROOM;
+	reverbs [7] = FMOD_PRESET_AUDITORIUM;
+	reverbs [8] = FMOD_PRESET_CONCERTHALL;
+	reverbs [9] = FMOD_PRESET_CAVE;
+	reverbs[10] = FMOD_PRESET_ARENA;
+	reverbs[11] = FMOD_PRESET_HANGAR;
+	reverbs[12] = FMOD_PRESET_CARPETTEDHALLWAY;
+	reverbs[13] = FMOD_PRESET_HALLWAY;
+	reverbs[14] = FMOD_PRESET_STONECORRIDOR;
+	reverbs[15] = FMOD_PRESET_ALLEY;
+	reverbs[16] = FMOD_PRESET_FOREST;
+	reverbs[17] = FMOD_PRESET_CITY;
+	reverbs[18] = FMOD_PRESET_MOUNTAINS;
+	reverbs[19] = FMOD_PRESET_QUARRY;
+	reverbs[20] = FMOD_PRESET_PLAIN;
+	reverbs[21] = FMOD_PRESET_PARKINGLOT;
+	reverbs[22] = FMOD_PRESET_SEWERPIPE;
+	reverbs[23] = FMOD_PRESET_UNDERWATER;
 }

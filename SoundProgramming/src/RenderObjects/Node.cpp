@@ -24,11 +24,13 @@ Node::~Node()
 
 void Node::Update()
 {
-
-	m_localMatrix = glm::scale(m_scale) * glm::translate(m_position) * glm::toMat4(m_rotation);
+	//m_localMatrix = glm::translate(m_localMatrix, m_position);
+	//m_localMatrix = glm::scale(m_localMatrix, m_scale);
+	//m_localMatrix = glm::rotate(m_localMatrix, 10.0f, glm::vec3(1,0.3f, 0.5f));
+	m_localMatrix = glm::translate(m_position) * glm::scale(m_scale);
 
 	if (m_parent != nullptr)
-		m_worldMatrix = m_localMatrix * m_parent->m_worldMatrix;
+		m_worldMatrix = m_parent->m_worldMatrix * m_localMatrix;
 	else
 		m_worldMatrix = m_localMatrix;
 

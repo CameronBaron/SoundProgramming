@@ -10,6 +10,8 @@ SoundClass::SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channel
 	result = (*m_FModSysRef)->createSound( filePath, FMOD_CREATESTREAM | FMOD_3D, 0, &m_audioClip);
 	specLeft = new float[m_sampleSize];
 	specRight = new float[m_sampleSize];
+
+	FMODErrorCheck(result);
 }
 
 SoundClass::~SoundClass()
@@ -19,7 +21,7 @@ SoundClass::~SoundClass()
 
 void SoundClass::Update()
 {
-	result = dsp_reverb->setBypass(dsp_chorusBypass);
+
 	result = dsp_reverb->setBypass(dsp_reverbBypass);
 
 	if (m_isPlaying)
@@ -29,12 +31,51 @@ void SoundClass::Update()
 
 		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
 	}
-	
-	result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWTYPE, FMOD_DSP_FFT_WINDOW_TRIANGLE);
-	result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, windowSize);
-	result = dsp_fft->getParameterFloat(FMOD_DSP_FFT_DOMINANT_FREQ, &val, 0, 0);
-	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);
 
+	//result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWTYPE, FMOD_DSP_FFT_WINDOW_TRIANGLE);
+	//result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, windowSize);
+	//result = dsp_fft->getParameterFloat(FMOD_DSP_FFT_DOMINANT_FREQ, &val, 0, 0);
+	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);
+	FMODErrorCheck(result);
+
+	fftHeights = new float[fftParameter->length];
+
+	for (int i = 0; i < fftParameter->numchannels; i++) // Two channels Left and Right but can allow for surround or mono
+	{
+		for (int j = 0; j < fftParameter->length; j++) // Minimum number of samples is 64 (32 left and 32 right)
+		{
+			float val = fftParameter->spectrum[i][j];
+			if (i == 0)
+			{
+				fftHeights[j] = val;
+			}
+			else
+			{
+				fftHeights[j] += val;
+			}
+		}
+	}
+
+	//nyquist = windowSize / 2;
+	//for (chan = 0; chan < 2; chan++)
+	//{
+	//	float average = 0.0f;
+	//	float power = 0.0f;
+	//
+	//	for (int i = 0; i < nyquist - 1; ++i)
+	//	{
+	//		float hz = i * (rate * 0.5f) / (nyquist - 1);
+	//		int index = i + (16384 * chan);
+	//
+	//		if (fftParameter->spectrum[chan][i] > 0.0001f)
+	//		{
+	//			average += fftData[index] * hz;
+	//			power += fftData[index];
+	//		}
+	//	}
+	//}
+
+	FMODErrorCheck(result);
 }
 
 void SoundClass::FMODErrorCheck(FMOD_RESULT res)
@@ -71,18 +112,8 @@ void SoundClass::Play()
 		result = dsp_reverb->addInput(channel_dsp_head);
 		
 		result = dsp_reverb->setBypass(dsp_reverbBypass);
-		/* Has the benifit of not disabling all inputs as SetActive would, and reverb process is not called, savinmg CPU */
+		/* Has the benifit of not disabling all inputs as SetActive would, and reverb process is not called, saving CPU */
 #pragma endregion
-
-#pragma region Chorus DSP
-		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_CHORUS, &dsp_chorus);
-		result = dsp_tail->addInput(dsp_chorus);
-		result = dsp_chorus->setActive(true);
-		result = dsp_chorus->addInput(channel_dsp_head);
-
-		result = dsp_reverb->setBypass(dsp_chorusBypass);
-#pragma endregion
-
 
 #pragma region Spectrum Attempt
 		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_FFT, &dsp_fft);
@@ -139,6 +170,8 @@ void SoundClass::Stop()
 {
 	result = m_channelRef->stop();
 	m_isPlaying = false;
+
+	FMODErrorCheck(result);
 }
 
 void SoundClass::UnPause()

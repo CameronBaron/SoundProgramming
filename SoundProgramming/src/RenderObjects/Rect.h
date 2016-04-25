@@ -13,11 +13,13 @@ public:
 	virtual void Init();
 	virtual void Update();
 
+	void LoadRawData();
+
 	FMOD_RESULT result;
 
 	FMOD::Geometry* m_geometry;
-	FMOD_VECTOR m_geoForward{ 0, 1, 0 };
-	FMOD_VECTOR m_geoUp{ 0, 0, 1 };
+	FMOD_VECTOR m_geoForward{ 0, 0, 1 };
+	FMOD_VECTOR m_geoUp{ 0, 1, 0 };
 	
 	float m_directOcclusion = 1;
 	float m_reverbOcclusion = 1;
