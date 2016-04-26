@@ -57,21 +57,6 @@
     <ClInclude Include="src\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Objects\BaseObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Objects\Cube.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Objects\Cylinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Objects\Sphere.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Objects\Room.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\RenderObjects\RenderObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -122,21 +107,6 @@
     <ClCompile Include="src\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Objects\Cube.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Objects\Cylinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Objects\Sphere.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Objects\Room.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Objects\BaseObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\RenderObjects\RenderObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -153,5 +123,7 @@
   <ItemGroup>
     <None Include="data\Shaders\shaders.frag" />
     <None Include="data\Shaders\shaders.vert" />
+    <None Include="data\Shaders\eq.frag" />
+    <None Include="data\Shaders\eq.vert" />
   </ItemGroup>
 </Project>

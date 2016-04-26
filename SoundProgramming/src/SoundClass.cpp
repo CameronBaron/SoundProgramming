@@ -8,20 +8,22 @@ SoundClass::SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channel
 	// Add to static list of sounds?
 
 	result = (*m_FModSysRef)->createSound( filePath, FMOD_CREATESTREAM | FMOD_3D, 0, &m_audioClip);
-	specLeft = new float[m_sampleSize];
-	specRight = new float[m_sampleSize];
 
 	FMODErrorCheck(result);
+
+	numOfBars = 32;
+	barVals = new float[numOfBars];
 }
 
 SoundClass::~SoundClass()
 {
 	result = m_audioClip->release();
+	fftHeights.clear();
+	delete[] barVals;
 }
 
 void SoundClass::Update()
 {
-
 	result = dsp_reverb->setBypass(dsp_reverbBypass);
 
 	if (m_isPlaying)
@@ -32,48 +34,38 @@ void SoundClass::Update()
 		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
 	}
 
-	//result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWTYPE, FMOD_DSP_FFT_WINDOW_TRIANGLE);
-	//result = dsp_fft->setParameterInt(FMOD_DSP_FFT_WINDOWSIZE, windowSize);
-	//result = dsp_fft->getParameterFloat(FMOD_DSP_FFT_DOMINANT_FREQ, &val, 0, 0);
 	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);
-	FMODErrorCheck(result);
 
-	fftHeights = new float[fftParameter->length];
+	fftHeightsSize = fftParameter->length / 2;
+	fftHeights.resize(fftHeightsSize);
 
-	for (int i = 0; i < fftParameter->numchannels; i++) // Two channels Left and Right but can allow for surround or mono
+	for (int channel = 0; channel < fftParameter->numchannels; channel++) // Two channels Left and Right but can also allow for surround or mono
 	{
-		for (int j = 0; j < fftParameter->length; j++) // Minimum number of samples is 64 (32 left and 32 right)
+		for (int bin = 0; bin < fftHeightsSize; bin++)
 		{
-			float val = fftParameter->spectrum[i][j];
-			if (i == 0)
+			float val = fftParameter->spectrum[channel][bin];
+
+			if (channel == 0)
 			{
-				fftHeights[j] = val;
+				fftHeights[bin] = val;
 			}
 			else
 			{
-				fftHeights[j] += val;
+				fftHeights[bin] += val;
+				fftHeights[bin] /= 2;
 			}
 		}
 	}
-
-	//nyquist = windowSize / 2;
-	//for (chan = 0; chan < 2; chan++)
-	//{
-	//	float average = 0.0f;
-	//	float power = 0.0f;
-	//
-	//	for (int i = 0; i < nyquist - 1; ++i)
-	//	{
-	//		float hz = i * (rate * 0.5f) / (nyquist - 1);
-	//		int index = i + (16384 * chan);
-	//
-	//		if (fftParameter->spectrum[chan][i] > 0.0001f)
-	//		{
-	//			average += fftData[index] * hz;
-	//			power += fftData[index];
-	//		}
-	//	}
-	//}
+	if (fftHeights.size() == 0) return;
+	for (int i = 0; i < numOfBars; i++)
+	{
+		barVals[i] = 0; // Clear out junk data
+		for (int j = 0; j < numOfBars; j++)
+		{
+			barVals[i] += fftHeights[j * (i + 1)];
+		}
+		barVals[i] = barVals[i] / numOfBars * 100;
+	}
 
 	FMODErrorCheck(result);
 }
@@ -117,14 +109,14 @@ void SoundClass::Play()
 
 #pragma region Spectrum Attempt
 		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_FFT, &dsp_fft);
-		result = m_master_channelGroupRef->addDSP(1, dsp_fft);
+		result = m_channelGroupRef->addDSP(1, dsp_fft);
 		result = dsp_fft->setActive(true);
 #pragma endregion
 
-		FMODErrorCheck(result);
 		UnPause();
 		m_isPlaying = true;
 		m_mute = false;
+		FMODErrorCheck(result);
 	}
 }
 

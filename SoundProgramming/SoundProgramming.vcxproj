@@ -15,11 +15,6 @@
     <ClInclude Include="src\RenderObjects\OpenBox.h" />
     <ClInclude Include="src\RenderObjects\Rect.h" />
     <ClInclude Include="src\RenderObjects\RenderObject.h" />
-    <ClInclude Include="src\Objects\Room.h" />
-    <ClInclude Include="src\Objects\Cube.h" />
-    <ClInclude Include="src\Objects\Cylinder.h" />
-    <ClInclude Include="src\Objects\Sphere.h" />
-    <ClInclude Include="src\Objects\BaseObject.h" />
     <ClInclude Include="deps\imgui\imconfig.h" />
     <ClInclude Include="deps\imgui\imgui.h" />
     <ClInclude Include="deps\imgui\imgui_impl_glfw_gl3.h" />
@@ -40,15 +35,10 @@
     <ClCompile Include="src\RenderObjects\OpenBox.cpp" />
     <ClCompile Include="src\RenderObjects\Rect.cpp" />
     <ClCompile Include="src\RenderObjects\RenderObject.cpp" />
-    <ClCompile Include="src\Objects\BaseObject.cpp" />
-    <ClCompile Include="src\Objects\Room.cpp" />
-    <ClCompile Include="src\Objects\Cube.cpp" />
-    <ClCompile Include="src\Objects\Cylinder.cpp" />
     <ClCompile Include="deps\imgui\imgui.cpp" />
     <ClCompile Include="deps\imgui\imgui_demo.cpp" />
     <ClCompile Include="deps\imgui\imgui_draw.cpp" />
     <ClCompile Include="deps\imgui\imgui_impl_glfw_gl3.cpp" />
-    <ClCompile Include="src\Objects\Sphere.cpp" />
     <ClCompile Include="src\GameObject.cpp" />
     <ClCompile Include="src\SoundClass.cpp" />
     <ClCompile Include="src\Application.cpp" />
@@ -59,6 +49,8 @@
     <ClCompile Include="src\SoundProgramming.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="data\Shaders\eq.frag" />
+    <None Include="data\Shaders\eq.vert" />
     <None Include="data\Shaders\shaders.frag" />
     <None Include="data\Shaders\shaders.vert" />
   </ItemGroup>

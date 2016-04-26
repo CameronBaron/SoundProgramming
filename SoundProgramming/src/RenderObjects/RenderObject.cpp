@@ -29,7 +29,6 @@ RenderObject::RenderObject(std::string a_name, glm::vec3 a_pos, glm::quat a_rot,
 {
 }
 
-
 RenderObject::~RenderObject()
 {
 }
@@ -47,8 +46,8 @@ void RenderObject::Update()
 void RenderObject::CreateOpenGLBuffers()
 {
 	int success = GL_FALSE;
-	unsigned int vertexShader = LoadShaderFromFile("./data/Shaders/shaders.vert", GL_VERTEX_SHADER);
-	unsigned int fragmentShader = LoadShaderFromFile("./data/Shaders/shaders.frag", GL_FRAGMENT_SHADER);
+	unsigned int vertexShader = LoadShaderFromFile(m_vertShaderFilePath, GL_VERTEX_SHADER);
+	unsigned int fragmentShader = LoadShaderFromFile(m_fragShaderFilePath, GL_FRAGMENT_SHADER);
 
 	m_programID = glCreateProgram();
 	glAttachShader(m_programID, vertexShader);
@@ -71,19 +70,11 @@ void RenderObject::CreateOpenGLBuffers()
 	glDeleteShader(fragmentShader);
 	glDeleteShader(vertexShader);
 
-	//glGenVertexArrays(1, &m_VAO);
-	//glBindVertexArray(m_VAO);
-
 	// Generate GL buffers
-	//glGenBuffers(1, &m_IBO);
 	glGenBuffers(1, &m_VBO);
 
 	// create and bind buffers to a vertex array object
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-
-	glEnableVertexAttribArray(0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, )
-
 
 #pragma region SubData Attempt
 
@@ -91,13 +82,8 @@ void RenderObject::CreateOpenGLBuffers()
 	int normalArraySize = sizeof(GLfloat) * m_normalCount;
 	int texArraySize = sizeof(GLfloat) * m_texcoordCount;
 	int totalArraySize = vertArraySize + normalArraySize + texArraySize;
-	//glBufferData(GL_ARRAY_BUFFER, vertArraySize + normalArraySize + texArraySize, (GLvoid*)0, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, totalArraySize, (GLvoid*)arrays, GL_DYNAMIC_DRAW);
 
-	//glBufferSubData(GL_ARRAY_BUFFER, 0, vertArraySize, m_vertBuffer); // Position
-	//check_gl_error();
-	//glBufferSubData(GL_ARRAY_BUFFER, vertArraySize, normalArraySize, m_normalBuffer); // Normal
-	//glBufferSubData(GL_ARRAY_BUFFER, vertArraySize + normalArraySize, texArraySize, m_texcoordBuffer); // Texcoord
+	glBufferData(GL_ARRAY_BUFFER, totalArraySize, (GLvoid*)arrays, GL_DYNAMIC_DRAW);
 
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), (GLvoid*)0); // Position
@@ -109,30 +95,13 @@ void RenderObject::CreateOpenGLBuffers()
 
 #pragma endregion
 
-
-	/*
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_vertexCount, m_vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * m_indicesCount, m_indices, GL_STATIC_DRAW);
-
-	glEnableVertexAttribArray(0); // Position
-	glEnableVertexAttribArray(1); // Texcoord
-	glEnableVertexAttribArray(2); // Normal
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, (char*)0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_TRUE,  sizeof(Vertex), (void*)offsetof(Vertex, texcoord));
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
-	*/
-
-	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
 void RenderObject::DrawElements()
 {
 	glBindVertexArray(0);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 
 	glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -140,51 +109,6 @@ void RenderObject::DrawElements()
 	glBindVertexArray(0);
 	glUseProgram(0);
 }
-
-//void RenderObject::CalculateNormals()
-
-//{
-//	unsigned int arraySize = m_rows * m_columns;
-//
-//	for (unsigned int i = 0; i < arraySize; ++i)
-//	{
-//		unsigned int currentRow = i / m_rows;
-//		unsigned int currentColumn = i % m_rows;
-//		glm::vec3 vAverage;
-//
-//		std::vector<glm::vec4> vectors;
-//
-//		// Get surrounding vertices
-//		glm::vec4 position = m_vertices[i].position;
-//		// if vertZ > 0, get vertZ - 1 row
-//		if (currentColumn > 0) // Left
-//		{
-//			vectors.push_back(m_vertices[currentRow * m_columns + (currentColumn - 1)].position - position);
-//		}
-//		// if vertX > 0, get vertX - 1 row
-//		if (currentRow > 0) // up
-//		{
-//			vectors.push_back(m_vertices[(currentRow - 1) * m_columns + currentColumn].position - position);
-//		}
-//		// if vertz < _rows - 1, get vertZ + 1 row
-//		if (currentColumn < m_columns - 1) // Right
-//		{
-//			vectors.push_back(m_vertices[currentRow * m_columns + (currentColumn + 1)].position - position);
-//		}
-//		// if vertX < _cols - 1, get vertX + 1 row
-//		if (currentRow < m_rows - 1) // Down
-//		{
-//			vectors.push_back(m_vertices[(currentRow + 1) * m_columns + currentColumn].position - position);
-//		}
-//		for (unsigned int j = 0; j < vectors.size() - 1; ++j)
-//		{
-//			glm::vec3 vCross = -glm::cross(glm::vec3(vectors[j]), glm::vec3(vectors[j + 1]));
-//			vAverage += vCross;
-//		}
-//
-//		m_vertices[i].normal = glm::vec4(glm::normalize(vAverage), 1);
-//	}
-//}
 
 unsigned int RenderObject::LoadShaderFromFile(const char * _filePath, unsigned int _shaderType)
 {
@@ -209,15 +133,6 @@ unsigned int RenderObject::LoadShaderFromFile(const char * _filePath, unsigned i
 		glCompileShader(shader);
 		delete[] source;
 
-		//std::pair<const char*, unsigned int> pairToAdd;
-		//pairToAdd = std::make_pair(_filePath, shader);
-
-		//shaderList.emplace(pairToAdd);
-
 		return shader;
 	}
-	//else
-	//{
-	//	return shaderList.at(_filePath);
-	//}
 }

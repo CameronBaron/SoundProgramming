@@ -4,9 +4,6 @@
 #include "Application.h"
 #include "Camera.h"
 #include "SoundClass.h"
-#include "Objects\Room.h"
-#include "tinyobjloader\tiny_obj_loader.h"
-#include "OBJLoader.h"
 #include <vector>
 #include "RenderObjects\OpenBox.h"
 

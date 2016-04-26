@@ -120,7 +120,6 @@ void Rect::Update()
 	m_geoUp = { up.x, up.y, up.z };
 }
 
-
 void Rect::LoadRawData()
 {
 	glm::vec3 vertices[8] =
@@ -206,4 +205,31 @@ void Rect::LoadRawData()
 	{
 		arrays[i + m_normalCount + m_vertexCount] = m_texcoordBuffer[i];
 	}
+}
+
+void Rect::LoadTextureData(int a_dataSize, float* a_data)
+{
+	glUseProgram(m_programID);
+	glGenTextures(1, &m_equaliserTex);
+	glBindTexture(GL_TEXTURE_1D, m_equaliserTex);
+
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_R32F, a_dataSize, 0, GL_RED, GL_FLOAT, a_data);
+
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // Nearest for no interpolation between pixels
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	texLoc = glGetUniformLocation(m_programID, "tex");
+	glUniform1i(texLoc, 0);
+}
+
+void Rect::UpdateTexData(int a_dataSize, float* a_data)
+{	
+	glUseProgram(m_programID);
+	//uniform
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_1D, m_equaliserTex);
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, a_dataSize, GL_RED, GL_FLOAT, a_data);
+	glUseProgram(0);
+	
 }

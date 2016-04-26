@@ -12,6 +12,8 @@ OpenBox::OpenBox(glm::vec3 a_pos, glm::vec3 a_scale, float a_wallOcc, float a_wa
 
 OpenBox::~OpenBox()
 {
+	delete[] properties;
+	delete[] reverbs;
 }
 
 void OpenBox::Init(FMOD::System* a_FMsystem)
@@ -21,28 +23,23 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 
 	float thickness = 0.01f;
 	float side = 4;
-	m_reverbInnerRadius;
-	m_reverbOuterRadius;
-
-	//glm::vec3(thickness, side, side)
-	//glm::vec3(thickness, side, side)
-	//glm::vec3(side, thickness, side)
-	//glm::vec3(side, thickness, side)
-	//
-	//glm::vec3(side, side, thickness)
 
 	m_walls[0] = new Rect(std::string("Left Wall"),   glm::vec3(-m_reverbInnerRadius, 0, 0), glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Left
 	m_walls[1] = new Rect(std::string("Right Wall"),  glm::vec3(m_reverbInnerRadius, 0, 0),  glm::vec3(thickness, side, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Right
 	m_walls[2] = new Rect(std::string("Top Wall"),	  glm::vec3(0, m_reverbInnerRadius, 0),  glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Top
 	m_walls[3] = new Rect(std::string("Bottom Wall"), glm::vec3(0, -m_reverbInnerRadius, 0), glm::vec3(side, thickness, side), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Bottom
 	// Display audio visualisation on this one, will need custom shaders
-	m_walls[4] = new Rect(std::string("Back Wall"),   glm::vec3(0, 0, -m_reverbInnerRadius), glm::vec3(side, side, thickness), glm::quat(), m_cubeVertShader, m_cubeFragShader, m_wallOcclusion, m_wallReverb, this); // Back
+	m_walls[4] = new Rect(std::string("Back Wall"),   glm::vec3(0, 0, -m_reverbInnerRadius), glm::vec3(side, side, thickness), glm::quat(), "./data/Shaders/eq.vert", "./data/Shaders/eq.frag", m_wallOcclusion, m_wallReverb, this); // Back
 
-	for (int i = 0; i < 5; ++i)
+	for (int i = 0; i < 4; ++i)
 	{
 		a_FMsystem->createGeometry(6, 24, &m_walls[i]->m_geometry);
 		m_walls[i]->Init();
 	}
+	a_FMsystem->createGeometry(6, 24, &m_walls[4]->m_geometry);
+	m_walls[4]->Init();
+	m_walls[4]->LoadTextureData(32, equaliserValues);
+	// Texture image stuff
 
 	a_FMsystem->createChannelGroup("Music Channel Group", &m_audioGroup);
 
@@ -51,7 +48,7 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	m_sound->Play();
 	FMOD_VECTOR pos = { m_position.x, m_position.y, m_position.z };
 	m_sound->m_channelPosition = pos;
-	m_sound->m_channelRef->setVolume(m_volume);
+	m_sound->m_channelRef->setVolume(m_volume);	
 
 	a_FMsystem->createReverb3D(&m_reverb);
 	m_reverb->set3DAttributes(&pos, m_reverbInnerRadius, m_reverbOuterRadius);
@@ -73,9 +70,9 @@ void OpenBox::Update()
 	m_reverb->set3DAttributes(&pos, m_reverbInnerRadius, m_reverbOuterRadius);
 	m_reverb->setProperties(&m_reverbProps);
 	m_sound->Update();
-	
-	//Gizmos::addSphere(m_position, m_reverbInnerRadius, 20, 20, glm::vec4(0,0,0,0.5f), &m_localMatrix);
-	//Gizmos::addSphere(m_position, m_reverbOuterRadius, 20, 20, glm::vec4(0,0,0,0.5f), &m_localMatrix);
+
+	equaliserValues = m_sound->barVals;
+	m_walls[4]->UpdateTexData(32, equaliserValues);
 }
 
 void OpenBox::Draw(Camera* a_camera)
@@ -85,6 +82,11 @@ void OpenBox::Draw(Camera* a_camera)
 		glUseProgram(m_walls[i]->m_programID);
 		unsigned int projectionViewUniform = glGetUniformLocation(m_walls[i]->m_programID, "MVP");
 		glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(a_camera->view_proj * m_walls[i]->m_worldMatrix));
+
+		if (i == 4)
+		{
+			glBindTexture(GL_TEXTURE0, m_walls[i]->m_equaliserTex);
+		}
 	
 		m_walls[i]->DrawElements();
 	}
@@ -113,9 +115,6 @@ void OpenBox::DrawGUI()
 			ImGui::Checkbox("Disable Reverb", &m_sound->dsp_reverbBypass);
 		}
 	}
-	
-	
-
 	// ImGui::End already called in SoundProgramming.ccp
 }
 

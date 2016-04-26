@@ -44,7 +44,7 @@ bool SoundProgramming::startup()
 
 	SongFilePaths();
 
-	room = new OpenBox(vec3(0, 0, 0), vec3(1), 1, 1, 3, 7, songFiles[1]);
+	room = new OpenBox(vec3(0, 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[3]);
 	room->Init(m_pFModSystem);
 
 #pragma endregion
@@ -151,7 +151,7 @@ void SoundProgramming::SongFilePaths()
 	songFiles[0] = "./data/audio/evironmental_effect_01.ogg";
 	songFiles[1] = "./data/audio/background_music.ogg";
 	songFiles[2] = "./data/audio/environmental_effect_02.ogg";
-	songFiles[3] = "";
+	songFiles[3] = "./data/audio/SeinfeldTheme.mp3";
 	songFiles[4] = "./data/audio/AMemoryAway.ogg";
 
 	soundProps[0] = FMOD_PRESET_UNDERWATER;

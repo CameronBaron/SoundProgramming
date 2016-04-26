@@ -10,6 +10,7 @@
 #include <fmod.hpp>
 #include <fmod_errors.h>
 #include "GameObject.h"
+#include <vector>
 
 class SoundClass : public GameObject
 {
@@ -73,8 +74,6 @@ public:
 
 // Frequency Analysis
 	int m_sampleSize = 64;
-	float* specLeft;
-	float* specRight;
 
 	FMOD::DSP* dsp_reverb;
 	bool dsp_reverbBypass = true;
@@ -83,7 +82,10 @@ public:
 	FMOD::DSP* channel_dsp_head;
 
 	FMOD_DSP_PARAMETER_FFT* fftParameter;
-	float* fftHeights;
+	std::vector<float> fftHeights;
+	int fftHeightsSize;
+	float* barVals;
+	int numOfBars;
 	unsigned int len;
 	char s[256];
 

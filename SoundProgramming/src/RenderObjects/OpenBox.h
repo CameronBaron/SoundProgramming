@@ -32,6 +32,7 @@ public:
 	FMOD_VECTOR m_reverbPosition = { 0, 0, 0 };
 	float m_reverbInnerRadius = 1;
 	float m_reverbOuterRadius = 5;
+	float* equaliserValues;
 
 	FMOD::Reverb3D* m_reverb = nullptr;
 	FMOD_REVERB_PROPERTIES m_reverbProps = FMOD_PRESET_OFF;

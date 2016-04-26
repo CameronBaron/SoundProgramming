@@ -20,6 +20,7 @@ public:
 	virtual void CreateOpenGLBuffers();
 	virtual void DrawElements();
 
+
 	unsigned int LoadShaderFromFile(const char * _filePath, unsigned int _shaderType);
 
 	std::string m_name;

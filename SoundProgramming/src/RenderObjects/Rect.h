@@ -13,6 +13,9 @@ public:
 	virtual void Init();
 	virtual void Update();
 
+	void LoadTextureData(int a_dataSize, float* a_data);
+	void UpdateTexData(int a_dataSize, float* a_data);
+
 	void LoadRawData();
 
 	FMOD_RESULT result;
@@ -25,4 +28,6 @@ public:
 	float m_reverbOcclusion = 1;
 
 	glm::vec3 m_size;
+	unsigned int m_equaliserTex; // 1D texture for sound equaliser
+	GLuint texLoc;
 };
