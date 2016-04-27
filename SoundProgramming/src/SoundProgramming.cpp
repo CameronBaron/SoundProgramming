@@ -17,7 +17,7 @@ bool SoundProgramming::startup()
     Gizmos::create();
 
     m_camera = FlyCamera(1280.0f / 720.0f, 10.0f);
-    m_camera.setLookAt(vec3(10, 10, 10), vec3(0), vec3(0, 1, 0));
+    m_camera.setLookAt(vec3(0, 0, 50), vec3(0), vec3(0, 1, 0));
     m_camera.sensitivity = 3;
 
 #pragma region Initialize FMOD

@@ -1,6 +1,7 @@
 #include "SoundClass.h"
 #include "Gizmos.h"
 #include "../deps/glm/glm/glm.hpp"
+#include <algorithm>
 
 SoundClass::SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channelGroup, FMOD_VECTOR position, const char* filePath) : m_FModSysRef(mainSystemRef), m_channelGroupRef(channelGroup)
 {
@@ -44,7 +45,6 @@ void SoundClass::Update()
 		for (int bin = 0; bin < fftHeightsSize; bin++)
 		{
 			float val = fftParameter->spectrum[channel][bin];
-
 			if (channel == 0)
 			{
 				fftHeights[bin] = val;
@@ -56,6 +56,7 @@ void SoundClass::Update()
 			}
 		}
 	}
+
 	if (fftHeights.size() == 0) return;
 	for (int i = 0; i < numOfBars; i++)
 	{
@@ -64,8 +65,19 @@ void SoundClass::Update()
 		{
 			barVals[i] += fftHeights[j * (i + 1)];
 		}
-		barVals[i] = barVals[i] / numOfBars * 50;
+		barVals[i] = barVals[i] / numOfBars * 30;
 	}
+
+	//// Find max volume
+	//if (fftHeights.size() != 0)
+	//{
+	//	auto maxIter = std::max_element(&barVals[0], &barVals[numOfBars]);
+	//	float maxVol = *maxIter;
+	//
+	//	// Normalise spec values
+	//	if (maxVol != 0)
+	//		std::transform(&barVals[0], &barVals[numOfBars], &barVals[0], [maxVol](float db) -> float {return db / maxVol; });
+	//}
 
 	FMODErrorCheck(result);
 }
