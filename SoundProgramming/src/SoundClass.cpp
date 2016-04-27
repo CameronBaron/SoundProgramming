@@ -34,7 +34,7 @@ void SoundClass::Update()
 		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
 	}
 
-	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);
+	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);	
 
 	fftHeightsSize = fftParameter->length / 2;
 	fftHeights.resize(fftHeightsSize);
@@ -64,7 +64,7 @@ void SoundClass::Update()
 		{
 			barVals[i] += fftHeights[j * (i + 1)];
 		}
-		barVals[i] = barVals[i] / numOfBars * 100;
+		barVals[i] = barVals[i] / numOfBars * 50;
 	}
 
 	FMODErrorCheck(result);
@@ -83,7 +83,9 @@ void SoundClass::Play()
 	//if (s_delayTimer <= 0)
 	{
 		if (!m_loop)
+		{
 			result = m_audioClip->setMode(FMOD_LOOP_OFF);
+		}
 		else
 		{
 			result = m_audioClip->setMode(FMOD_LOOP_NORMAL);
@@ -95,8 +97,8 @@ void SoundClass::Play()
 #pragma region Reverb Example
 		FMOD::ChannelGroup* m_master_channelGroupRef;
 		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &dsp_reverb);
-		result = (*m_FModSysRef)->getMasterChannelGroup(&m_master_channelGroupRef);
-		result = m_master_channelGroupRef->getDSP(FMOD_CHANNELCONTROL_DSP_TAIL, &dsp_tail);
+		//result = (*m_FModSysRef)->getMasterChannelGroup(&m_master_channelGroupRef);
+		result = m_channelGroupRef->getDSP(FMOD_CHANNELCONTROL_DSP_TAIL, &dsp_tail);
 		result = dsp_tail->addInput(dsp_reverb);
 		result = dsp_reverb->setActive(true);		
 
@@ -107,9 +109,9 @@ void SoundClass::Play()
 		/* Has the benifit of not disabling all inputs as SetActive would, and reverb process is not called, saving CPU */
 #pragma endregion
 
-#pragma region Spectrum Attempt
+#pragma region Spectrum Info
 		result = (*m_FModSysRef)->createDSPByType(FMOD_DSP_TYPE_FFT, &dsp_fft);
-		result = m_channelGroupRef->addDSP(1, dsp_fft);
+		result = m_channelRef->addDSP(FMOD_CHANNELCONTROL_DSP_TAIL, dsp_fft); // Add it to the tail, which gets the info before any 3D/Reverb/Volume effects applied.
 		result = dsp_fft->setActive(true);
 #pragma endregion
 

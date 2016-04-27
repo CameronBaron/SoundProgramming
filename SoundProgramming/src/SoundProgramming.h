@@ -48,7 +48,7 @@ public:
 	const char* songFiles[5];
 	FMOD_REVERB_PROPERTIES soundProps[5];
 
-	OpenBox* room;
+	OpenBox* rooms[5];
 	float a = 1;
 };
 

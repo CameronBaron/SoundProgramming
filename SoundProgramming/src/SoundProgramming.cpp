@@ -12,7 +12,7 @@ bool SoundProgramming::startup()
         return false;
     }
 
-    glClearColor(0.25f, 0.25f, 0.25f, 1);
+    glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
     Gizmos::create();
 
@@ -44,8 +44,15 @@ bool SoundProgramming::startup()
 
 	SongFilePaths();
 
-	room = new OpenBox(vec3(0, 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[3]);
-	room->Init(m_pFModSystem);
+	for (int i = 0; i < 5; i++)
+	{
+		rooms[i] = new OpenBox(vec3(-50 + (i * 20), 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[i]);
+		rooms[i]->roomID = i + 1;
+		rooms[i]->Init(m_pFModSystem);
+	}
+
+	//room = new OpenBox(vec3(0, 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[2]);
+	//room->Init(m_pFModSystem);
 
 #pragma endregion
 	
@@ -72,7 +79,7 @@ bool SoundProgramming::update()
     dt = (float)glfwGetTime() - lastFrameTime;
 	lastFrameTime = (float)glfwGetTime();
 
-#pragma region FMOD
+#pragma region FMOD Listener
 
 	m_listenerPosition = { m_camera.getPosition().x, m_camera.getPosition().y, m_camera.getPosition().z };
 	m_listenerVelocity = { m_camera.m_FMvelocity.x * dopplerLevel , m_camera.m_FMvelocity.y * dopplerLevel, m_camera.m_FMvelocity.z * dopplerLevel };
@@ -81,33 +88,28 @@ bool SoundProgramming::update()
 	result = m_pFModSystem->set3DListenerAttributes
 		(0, &m_listenerPosition, &m_listenerVelocity, &m_listenerForward, &m_listenerUp);
 
-	//guntimer += dt;
-	//if (guntimer >= gunCooldown && glfwGetMouseButton(m_window, GLFW_MOUSE_BUTTON_1) == GLFW_PRESS)
-	//{
-	//	//play sound m_gunSound
-	//	playSound(m_gunSound, m_FMposition, m_FMvelocity, dt);
-	//	guntimer = 0;
-	//}
-
 	result = m_pFModSystem->update();
 #pragma endregion
 
 #pragma region Gizmos
-	Gizmos::clear();
-
-    vec4 white(1);
-    vec4 black(0, 0, 0, 1);
-    for (int i = 0; i <= 20; ++i)
-    {
-        Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
-        Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
-    }
+	//Gizmos::clear();
+	//
+    //vec4 white(1);
+    //vec4 black(0, 0, 0, 1);
+    //for (int i = 0; i <= 20; ++i)
+    //{
+    //    Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
+    //    Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
+    //}
 	
 #pragma endregion
 
 	//room->m_rotation = glm::rotate(room->m_rotation, dt, vec3(1, 0, 0));
-	
-	room->Update();
+	for each (OpenBox* ob in rooms)
+	{
+		ob->Update();
+	}
+	//room->Update();
 	
     m_camera.update(dt);	
 	
@@ -119,7 +121,12 @@ void SoundProgramming::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	ImGui_ImplGlfwGL3_NewFrame();
 
-	room->Draw(&m_camera);
+	for each (OpenBox* ob in rooms)
+	{
+		ob->Draw(&m_camera);
+	}
+	
+	//room->Draw(&m_camera);
 
     Gizmos::draw(m_camera.proj, m_camera.view);
 	DrawGUI();
@@ -141,7 +148,11 @@ void SoundProgramming::DrawGUI()
 	{
 		ImGui::DragFloat("Doppler Level", &dopplerLevel, 0.01f, 0.0f, 1.0f);
 	}
-	room->DrawGUI();
+	//room->DrawGUI();
+	for each (OpenBox* ob in rooms)
+	{
+		ob->DrawGUI();
+	}
 
 	ImGui::End();
 }
@@ -150,13 +161,13 @@ void SoundProgramming::SongFilePaths()
 {
 	songFiles[0] = "./data/audio/evironmental_effect_01.ogg";
 	songFiles[1] = "./data/audio/background_music.ogg";
-	songFiles[2] = "./data/audio/environmental_effect_02.ogg";
+	songFiles[2] = "./data/audio/GetSchwifty.mp3";
 	songFiles[3] = "./data/audio/SeinfeldTheme.mp3";
-	songFiles[4] = "./data/audio/AMemoryAway.ogg";
+	songFiles[4] = "./data/audio/Rain.mp3";
 
-	soundProps[0] = FMOD_PRESET_UNDERWATER;
-	soundProps[1] = FMOD_PRESET_CITY;
-	soundProps[2] = FMOD_PRESET_HANGAR;
-	soundProps[3] = FMOD_PRESET_PADDEDCELL;
-	soundProps[4] = FMOD_PRESET_ALLEY;
+	soundProps[0] = FMOD_PRESET_OFF;
+	soundProps[1] = FMOD_PRESET_OFF;
+	soundProps[2] = FMOD_PRESET_OFF;
+	soundProps[3] = FMOD_PRESET_OFF;
+	soundProps[4] = FMOD_PRESET_OFF;
 }

@@ -37,7 +37,8 @@ void main()
 	}
 	else
 	{
-		FragColor = mix(vec4(0,0.5,0.5,1), vec4(1,0,0,1), offset);
+		FragColor = vec4(0,0.5,0.5, 1);
 		//FragColor = vec4(0, 0.5, 0.5, 1);
 	}
+		//FragColor.rgb = mix(vec3(0,0.5,0.5), vec3(1,0,0), offset + 0.2);
 }

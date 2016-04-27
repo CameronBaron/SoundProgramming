@@ -72,7 +72,7 @@ void OpenBox::Update()
 	m_sound->Update();
 
 	equaliserValues = m_sound->barVals;
-	m_walls[4]->UpdateTexData(32, equaliserValues);
+	m_walls[4]->UpdateTexData(numOfBars, equaliserValues);
 }
 
 void OpenBox::Draw(Camera* a_camera)
@@ -85,7 +85,8 @@ void OpenBox::Draw(Camera* a_camera)
 
 		if (i == 4)
 		{
-			glBindTexture(GL_TEXTURE0, m_walls[i]->m_equaliserTex);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_1D, m_walls[i]->m_equaliserTex);
 		}
 	
 		m_walls[i]->DrawElements();
@@ -95,7 +96,8 @@ void OpenBox::Draw(Camera* a_camera)
 
 void OpenBox::DrawGUI()
 {
-	if (ImGui::CollapsingHeader("Room 1"))
+	std::string name = "Room" + std::to_string(roomID);
+	if (ImGui::CollapsingHeader(name.c_str()))
 	{
 		ImGui::DragFloat3("Position", &m_position[0]);
 		if (ImGui::CollapsingHeader("Reverb Zone"))

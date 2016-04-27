@@ -73,7 +73,7 @@ public:
 	float m_maxDistance;			// (Logarithmic rolloff) The distance the sound stops attenuating at.
 
 // Frequency Analysis
-	int m_sampleSize = 64;
+	int m_sampleSize = 32;
 
 	FMOD::DSP* dsp_reverb;
 	bool dsp_reverbBypass = true;
@@ -88,6 +88,9 @@ public:
 	int numOfBars;
 	unsigned int len;
 	char s[256];
+
+// Beat detection
+
 
 
 private:

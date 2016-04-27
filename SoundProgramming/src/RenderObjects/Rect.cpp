@@ -227,9 +227,9 @@ void Rect::UpdateTexData(int a_dataSize, float* a_data)
 	glUseProgram(m_programID);
 	//uniform
 
-	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_1D, m_equaliserTex);
 	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, a_dataSize, GL_RED, GL_FLOAT, a_data);
+
 	glUseProgram(0);
 	
 }
