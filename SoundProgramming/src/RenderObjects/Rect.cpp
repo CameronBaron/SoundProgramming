@@ -19,41 +19,9 @@ Rect::~Rect()
 void Rect::Init()
 {
 	LoadRawData();
-	/*
-	m_vertexCount = 24;
-	m_indicesCount = 36;
-
-	m_vertices = new float[m_vertexCount]
-	{
-		-.5f * m_size.x, -.5f * m_size.y,  .5f * m_size.z,
-		-.5f * m_size.x,  .5f * m_size.y,  .5f * m_size.z,
-		 .5f * m_size.x,  .5f * m_size.y,  .5f * m_size.z,
-		 .5f * m_size.x, -.5f * m_size.y,  .5f * m_size.z,
-		-.5f * m_size.x, -.5f * m_size.y, -.5f * m_size.z,
-		-.5f * m_size.x,  .5f * m_size.y, -.5f * m_size.z,
-		 .5f * m_size.x,  .5f * m_size.y, -.5f * m_size.z,
-		 .5f * m_size.x, -.5f * m_size.y, -.5f * m_size.z
-	};
-
-	m_indices = new unsigned int[m_indicesCount]
-	{
-		0, 2, 1, 0, 3, 2,
-		4, 3, 0, 4, 7, 3,
-		4, 1, 5, 4, 0, 1,
-		3, 6, 2, 3, 7, 6,
-		1, 6, 5, 1, 2, 6,
-		7, 5, 6, 7, 4, 5
-	};*/
 
 	FMOD_VECTOR cube[24] = //6 faces times 4 verts = 24
 	{
-	//	{  0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z }, //+X face
-	//	{ -0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z },{ -0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z },{ -0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z },{ -0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z }, //-X face
-	//	{ -0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z },{ -0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z }, //+Y face
-	//	{ -0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z },{ -0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z }, //-Y face
-	//	{ -0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z },{ -0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y,  0.5f * m_size.z },{  0.5f * m_size.x, -0.5f * m_size.y,  0.5f * m_size.z }, //+Z face
-	//	{ -0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z },{ -0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x,  0.5f * m_size.y, -0.5f * m_size.z },{  0.5f * m_size.x, -0.5f * m_size.y, -0.5f * m_size.z }, //-Z face
-		
 		{  0.5f, -0.5f, -0.5f },
 		{  0.5f, -0.5f,  0.5f },
 		{  0.5f,  0.5f,  0.5f },
@@ -107,9 +75,6 @@ void Rect::Update()
 
 	m_geometry->setRotation(&m_geoForward, &m_geoUp);
 
-	// Add bounding box for visual guide
-	//Gizmos::addAABB(glm::vec3(m_worldMatrix[3].x, m_worldMatrix[3].y, m_worldMatrix[3].z), m_scale, glm::vec4( 1, 0, 0, 0), &m_localMatrix);
-
 	// Update forward and up vectors to use with FMOD rotation
 	glm::vec3 front = glm::vec3(m_worldMatrix[2].x, m_worldMatrix[2].y, m_worldMatrix[2].z);
 	front = glm::normalize(front);
@@ -145,11 +110,11 @@ void Rect::LoadRawData()
 	glm::vec3 normals[6] =
 	{
 		glm::vec3(0, 0, 1),
-		glm::vec3(1, 0, 0),
 		glm::vec3(0, 0, -1),
-		glm::vec3(-1, 0, 0),
 		glm::vec3(0, 1, 0),
-		glm::vec3(0, -1, 0)
+		glm::vec3(0, -1, 0),
+		glm::vec3(-1, 0, 0),
+		glm::vec3(1, 0, 0)
 	};
 
 	int indices[6 * 6] =
@@ -185,9 +150,9 @@ void Rect::LoadRawData()
 	m_normalBuffer = new float[m_normalCount];
 	for (int i = 0; i < 36; i++) 
 	{
-		m_normalBuffer[i * 3 + 0] = normals[indices[i / 6]].x;
-		m_normalBuffer[i * 3 + 1] = normals[indices[i / 6]].y;
-		m_normalBuffer[i * 3 + 2] = normals[indices[i / 6]].z;
+		m_normalBuffer[i * 3 + 0] = normals[i / 6].x;
+		m_normalBuffer[i * 3 + 1] = normals[i / 6].y;
+		m_normalBuffer[i * 3 + 2] = normals[i / 6].z;
 	}
 
 	arraySize = m_vertexCount + m_texcoordCount + m_normalCount;

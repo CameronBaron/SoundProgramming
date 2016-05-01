@@ -46,13 +46,10 @@ bool SoundProgramming::startup()
 
 	for (int i = 0; i < 5; i++)
 	{
-		rooms[i] = new OpenBox(vec3(-50 + (i * 20), 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[i]);
+		rooms[i] = new OpenBox(vec3(-40 + (i * 20), 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[i]);
 		rooms[i]->roomID = i + 1;
 		rooms[i]->Init(m_pFModSystem);
 	}
-
-	//room = new OpenBox(vec3(0, 0, 0), vec3(1), 0.5f, 1, 3, 7, songFiles[2]);
-	//room->Init(m_pFModSystem);
 
 #pragma endregion
 	
@@ -92,7 +89,7 @@ bool SoundProgramming::update()
 #pragma endregion
 
 #pragma region Gizmos
-	//Gizmos::clear();
+	Gizmos::clear();
 	//
     //vec4 white(1);
     //vec4 black(0, 0, 0, 1);
@@ -104,12 +101,10 @@ bool SoundProgramming::update()
 	
 #pragma endregion
 
-	//room->m_rotation = glm::rotate(room->m_rotation, dt, vec3(1, 0, 0));
 	for each (OpenBox* ob in rooms)
 	{
 		ob->Update();
 	}
-	//room->Update();
 	
     m_camera.update(dt);	
 	
@@ -125,8 +120,6 @@ void SoundProgramming::draw()
 	{
 		ob->Draw(&m_camera);
 	}
-	
-	//room->Draw(&m_camera);
 
     Gizmos::draw(m_camera.proj, m_camera.view);
 	DrawGUI();
@@ -134,8 +127,6 @@ void SoundProgramming::draw()
 	ImGui::Render();
     glfwSwapBuffers(m_window);
     glfwPollEvents();
-
-	// Calls Render for ImGui
 }
 
 void SoundProgramming::DrawGUI()
@@ -143,12 +134,12 @@ void SoundProgramming::DrawGUI()
 	float gui_alpha = -1;
 	bool gui_opened = true;
 
-	ImGui::Begin("Main WIndow", &gui_opened, ImVec2(350, 350), gui_alpha, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
+	ImGui::Begin("Main WIndow", &gui_opened, ImVec2(350, 500), gui_alpha, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize);
 	if (ImGui::CollapsingHeader("Listener Options"))
 	{
 		ImGui::DragFloat("Doppler Level", &dopplerLevel, 0.01f, 0.0f, 1.0f);
 	}
-	//room->DrawGUI();
+
 	for each (OpenBox* ob in rooms)
 	{
 		ob->DrawGUI();
@@ -159,11 +150,17 @@ void SoundProgramming::DrawGUI()
 
 void SoundProgramming::SongFilePaths()
 {
-	songFiles[0] = "./data/audio/evironmental_effect_01.ogg";
-	songFiles[1] = "./data/audio/background_music.ogg";
-	songFiles[2] = "./data/audio/GetSchwifty.mp3";
-	songFiles[3] = "./data/audio/SeinfeldTheme.mp3";
-	songFiles[4] = "./data/audio/Rain.mp3";
+	songFiles[2] = "./data/audio/Ratatat/02 Cream on Chrome.mp3";
+	songFiles[1] = "./data/audio/Ratatat/Holdin' On.mp3";
+	songFiles[0] = "./data/audio/Ratatat/04 Abrasive.mp3";
+	songFiles[3] = "./data/audio/Ratatat/01 Sintra 1.mp3";
+	songFiles[4] = "./data/audio/Ratatat/08 Nightclub Amnesia.mp3";
+
+	//songFiles[0] = "./data/audio/Ratatat/02 Cream on Chrome.mp3";
+	//songFiles[1] = "./data/audio/background_music.ogg";
+	//songFiles[2] = "./data/audio/GetSchwifty.mp3";
+	//songFiles[3] = "./data/audio/SeinfeldTheme.mp3";
+	//songFiles[4] = "./data/audio/Rain.mp3";
 
 	soundProps[0] = FMOD_PRESET_OFF;
 	soundProps[1] = FMOD_PRESET_OFF;

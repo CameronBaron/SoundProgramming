@@ -6,11 +6,10 @@
 SoundClass::SoundClass(FMOD::System** mainSystemRef, FMOD::ChannelGroup* channelGroup, FMOD_VECTOR position, const char* filePath) : m_FModSysRef(mainSystemRef), m_channelGroupRef(channelGroup)
 {
 	SetDefaultValues();
-	// Add to static list of sounds?
 
 	result = (*m_FModSysRef)->createSound( filePath, FMOD_CREATESTREAM | FMOD_3D, 0, &m_audioClip);
 
-	FMODErrorCheck(result);
+	FMODErrorCheck();
 
 	numOfBars = 32;
 	barVals = new float[numOfBars];
@@ -32,17 +31,16 @@ void SoundClass::Update()
 		result = m_channelRef->getPosition(&m_time, FMOD_TIMEUNIT_PCM);
 		m_channelRef->set3DAttributes(&m_channelPosition, &m_channelVelocity);
 
-		Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
+		//Gizmos::addSphere(glm::vec3(m_channelPosition.x, m_channelPosition.y, m_channelPosition.z), 0.1f, 10, 10, glm::vec4(1, 0, 0, 1));
 	}
 
 	result = dsp_fft->getParameterData(FMOD_DSP_FFT_SPECTRUMDATA, (void**)&fftParameter, &len, s, 256);	
 
-	fftHeightsSize = fftParameter->length / 2;
-	fftHeights.resize(fftHeightsSize);
+	fftHeights.resize(m_sampleSize);
 
 	for (int channel = 0; channel < fftParameter->numchannels; channel++) // Two channels Left and Right but can also allow for surround or mono
 	{
-		for (int bin = 0; bin < fftHeightsSize; bin++)
+		for (int bin = 0; bin < m_sampleSize; bin++)
 		{
 			float val = fftParameter->spectrum[channel][bin];
 			if (channel == 0)
@@ -52,41 +50,31 @@ void SoundClass::Update()
 			else
 			{
 				fftHeights[bin] += val;
-				fftHeights[bin] /= 2;
+				//fftHeights[bin] /= 2;
 			}
 		}
 	}
 
-	if (fftHeights.size() == 0) return;
-	for (int i = 0; i < numOfBars; i++)
+#pragma region Beat Detection
+
+	// Lowest frequency sounds in sample 1 (eg. bass/drums)
+	beatIntensity = 0;
+	for (int i = 0; i < 5; i++)
 	{
-		barVals[i] = 0; // Clear out junk data
-		for (int j = 0; j < numOfBars; j++)
-		{
-			barVals[i] += fftHeights[j * (i + 1)];
-		}
-		barVals[i] = barVals[i] / numOfBars * 30;
+		if (beatIntensity < fftHeights[i])
+			beatIntensity = fftHeights[i];
 	}
 
-	//// Find max volume
-	//if (fftHeights.size() != 0)
-	//{
-	//	auto maxIter = std::max_element(&barVals[0], &barVals[numOfBars]);
-	//	float maxVol = *maxIter;
-	//
-	//	// Normalise spec values
-	//	if (maxVol != 0)
-	//		std::transform(&barVals[0], &barVals[numOfBars], &barVals[0], [maxVol](float db) -> float {return db / maxVol; });
-	//}
+#pragma endregion
 
-	FMODErrorCheck(result);
+	FMODErrorCheck();
 }
 
-void SoundClass::FMODErrorCheck(FMOD_RESULT res)
+void SoundClass::FMODErrorCheck()
 {
-	if (res != FMOD_OK)
+	if (result != FMOD_OK)
 	{
-		printf("FMOD Error. (%d) %s\n", res, FMOD_ErrorString(res));
+		printf("FMOD Error. (%d) %s\n", result, FMOD_ErrorString(result));
 	}
 }
 
@@ -130,14 +118,14 @@ void SoundClass::Play()
 		UnPause();
 		m_isPlaying = true;
 		m_mute = false;
-		FMODErrorCheck(result);
+		FMODErrorCheck();
 	}
 }
 
 void SoundClass::Pause()
 {
 	result = m_channelRef->setPaused(true);
-	FMODErrorCheck(result);
+	FMODErrorCheck();
 }
 
 void SoundClass::PlayDelayed(float timeDelay)
@@ -177,11 +165,11 @@ void SoundClass::Stop()
 	result = m_channelRef->stop();
 	m_isPlaying = false;
 
-	FMODErrorCheck(result);
+	FMODErrorCheck();
 }
 
 void SoundClass::UnPause()
 {
 	result = m_channelRef->setPaused(false);
-	FMODErrorCheck(result);
+	FMODErrorCheck();
 }

@@ -31,7 +31,7 @@ void main()
 	//FragColor = vec4(offset, offset, offset, 1);
 
 	float offset = GetHeightValue();
-	if (vTexcoord.y > offset)
+	if (vTexcoord.y > offset + 0.5 || vTexcoord.y < 0.5 - offset)
 	{
 		FragColor = vec4(0, 0, 0, 1);
 	}

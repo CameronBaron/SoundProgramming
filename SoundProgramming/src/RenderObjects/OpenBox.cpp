@@ -38,7 +38,7 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	}
 	a_FMsystem->createGeometry(6, 24, &m_walls[4]->m_geometry);
 	m_walls[4]->Init();
-	m_walls[4]->LoadTextureData(32, equaliserValues);
+	m_walls[4]->LoadTextureData(m_sampleSize, equaliserValues);
 	// Texture image stuff
 
 	a_FMsystem->createChannelGroup("Music Channel Group", &m_audioGroup);
@@ -54,10 +54,19 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	m_reverb->set3DAttributes(&pos, m_reverbInnerRadius, m_reverbOuterRadius);
 	m_reverb->setProperties(&m_reverbProps);
 	InitReverbPresets();
+
+	//Lighting
+	LoadLightUniformLocs();
+	lightColor = vec3(1, 1, 1);
+	lightAmbient = 5;
+	lightConstantAtt = 1;
+	lightExpAtt = 1;
+	lightLinearAtt = 1;
 }
 
 void OpenBox::Update()
 {
+	Gizmos::addSphere(m_position, 0.1f, 4, 4, vec4(0, 0, 1, 1));
 	m_rotation = glm::quat(1,20,1,1);
 	Node::Update();
 
@@ -71,17 +80,40 @@ void OpenBox::Update()
 	m_reverb->setProperties(&m_reverbProps);
 	m_sound->Update();
 
-	equaliserValues = m_sound->barVals;
-	m_walls[4]->UpdateTexData(numOfBars, equaliserValues);
+	equaliserValues = &m_sound->fftHeights[0];
+	
+	m_walls[4]->UpdateTexData(m_sampleSize, equaliserValues);
+
+	//Lighting
 }
 
 void OpenBox::Draw(Camera* a_camera)
 {
 	for (int i = 0; i < 5; i++)
 	{
-		glUseProgram(m_walls[i]->m_programID);
-		unsigned int projectionViewUniform = glGetUniformLocation(m_walls[i]->m_programID, "MVP");
+		unsigned int currProg = m_walls[i]->m_programID;
+		glUseProgram(currProg);
+		unsigned int projectionViewUniform = glGetUniformLocation(currProg, "MVP");
 		glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(a_camera->view_proj * m_walls[i]->m_worldMatrix));
+
+		// Uniform for beat value to use for lighting
+		unsigned int beatUniform = glGetUniformLocation(currProg, "beatIntensity");
+		glUniform1f(beatUniform, m_sound->beatIntensity);
+
+		//worldPos
+		glUniform3fv(m_walls[i]->worldPosLoc, 1, glm::value_ptr(m_walls[i]->m_worldMatrix[3]));
+		//light.vColor
+		glUniform3fv(m_walls[i]->lightColorLoc, 1, glm::value_ptr(lightColor));
+		//light.vPosition
+		glUniform3fv(m_walls[i]->lightPosLoc, 1, glm::value_ptr(m_position));
+		//light.fAmbient
+		glUniform1f(m_walls[i]->lightAmbientLoc, lightAmbient);
+		//light.fConstantAtt
+		glUniform1f(m_walls[i]->lightConstantAttLoc, lightConstantAtt);
+		//light.fLinearAtt
+		glUniform1f(m_walls[i]->lightLinearAttLoc, lightLinearAtt);
+		//light.fExpAtt
+		glUniform1f(m_walls[i]->lightExpAttLoc, lightExpAtt);
 
 		if (i == 4)
 		{
@@ -171,4 +203,29 @@ void OpenBox::InitReverbPresets()
 	reverbs[21] = FMOD_PRESET_PARKINGLOT;
 	reverbs[22] = FMOD_PRESET_SEWERPIPE;
 	reverbs[23] = FMOD_PRESET_UNDERWATER;
+}
+
+void OpenBox::LoadLightUniformLocs()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		unsigned int currProg = m_walls[i]->m_programID;
+		glUseProgram(currProg);
+
+		//worldPos
+		m_walls[i]->worldPosLoc			= glGetUniformLocation(currProg, "worldPos");
+		//light.vColor
+		m_walls[i]->lightColorLoc		= glGetUniformLocation(currProg, "light.Color");
+		//light.vPosition
+		m_walls[i]->lightPosLoc			= glGetUniformLocation(currProg, "light.Position");
+		//light.fAmbient
+		m_walls[i]->lightAmbientLoc		= glGetUniformLocation(currProg, "light.fAmbient");
+		//light.fConstantAtt
+		m_walls[i]->lightConstantAttLoc = glGetUniformLocation(currProg, "light.fConstantAtt");
+		//light.fLinearAtt
+		m_walls[i]->lightLinearAttLoc	= glGetUniformLocation(currProg, "light.fLinearAtt");
+		//light.fExpAtt
+		m_walls[i]->lightExpAttLoc		= glGetUniformLocation(currProg, "light.fExpAtt");
+	}
+	glUseProgram(0);
 }

@@ -16,6 +16,7 @@ public:
 	void Draw(Camera* a_camera);
 	void DrawGUI();
 	void InitReverbPresets();
+	void LoadLightUniformLocs();
 
 	Rect* m_walls[5];
 	float m_wallOcclusion = 1;
@@ -33,7 +34,7 @@ public:
 	float m_reverbInnerRadius = 1;
 	float m_reverbOuterRadius = 5;
 	float* equaliserValues;
-	int numOfBars = 32;
+	int m_sampleSize = 64;
 
 	FMOD::Reverb3D* m_reverb = nullptr;
 	FMOD_REVERB_PROPERTIES m_reverbProps = FMOD_PRESET_OFF;
@@ -45,5 +46,13 @@ public:
 	const char* m_cubeFragShader = "./data/Shaders/shaders.frag";
 
 	int roomID = 0;
+
+// Light vars
+	glm::vec3 lightPos;
+	glm::vec3 lightColor;
+	float lightAmbient;
+	float lightConstantAtt;
+	float lightLinearAtt;
+	float lightExpAtt;
 };
 

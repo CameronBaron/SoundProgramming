@@ -19,7 +19,7 @@ public:
 	~SoundClass();
 	void Update();
 
-	void FMODErrorCheck(FMOD_RESULT res);
+	void FMODErrorCheck();
 
 	void Play();										// Plays the audio clip.
 	void Pause();										// Pauses the audio clip.
@@ -73,7 +73,7 @@ public:
 	float m_maxDistance;			// (Logarithmic rolloff) The distance the sound stops attenuating at.
 
 // Frequency Analysis
-	int m_sampleSize = 32;
+	int m_sampleSize = 64;
 
 	FMOD::DSP* dsp_reverb;
 	bool dsp_reverbBypass = true;
@@ -90,7 +90,8 @@ public:
 	char s[256];
 
 // Beat detection
-
+	float beatIntensity = 0;
+	bool beatDetected = false;
 
 
 private:

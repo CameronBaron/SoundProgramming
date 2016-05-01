@@ -30,4 +30,13 @@ public:
 	glm::vec3 m_size;
 	unsigned int m_equaliserTex; // 1D texture for sound equaliser
 	GLuint texLoc;
+
+//Lighting
+	unsigned int lightPosLoc = 0;
+	unsigned int lightColorLoc = 0;
+	unsigned int lightAmbientLoc = 0;
+	unsigned int lightConstantAttLoc = 0;
+	unsigned int lightLinearAttLoc = 0;
+	unsigned int lightExpAttLoc = 0;
+	unsigned int worldPosLoc = 0;
 };
