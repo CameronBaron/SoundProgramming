@@ -25,6 +25,10 @@ uniform vec3 worldPos;
 
 vec4 getPointLightColor(PointLight ptLight) 
 { 
+	if (beatIntensity < 0.2)
+	{
+		return vec4(0,0,0,1);
+	}
     vec3 vPosToLight = (vPosition + worldPos) - ptLight.Position;
 	float fDist = length(vPosToLight);
 	vPosToLight = normalize(vPosToLight);
