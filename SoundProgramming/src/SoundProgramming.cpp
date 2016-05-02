@@ -14,9 +14,9 @@ bool SoundProgramming::startup()
 
     glClearColor(0, 0, 0, 1);
     glEnable(GL_DEPTH_TEST);
-    Gizmos::create();
-
-    m_camera = FlyCamera(1280.0f / 720.0f, 10.0f);
+	window_width = 1280;
+	window_height = 780;
+    m_camera = FlyCamera(1280.0f / 780.0f, 10.0f);
     m_camera.setLookAt(vec3(0, 0, 50), vec3(0), vec3(0, 1, 0));
     m_camera.sensitivity = 3;
 
@@ -58,8 +58,6 @@ bool SoundProgramming::startup()
 
 void SoundProgramming::shutdown()
 {
-    Gizmos::destroy();
-
 	m_pFModSystem->close();
 	m_pFModSystem->release();
 
@@ -88,24 +86,19 @@ bool SoundProgramming::update()
 	result = m_pFModSystem->update();
 #pragma endregion
 
-#pragma region Gizmos
-	Gizmos::clear();
-	//
-    //vec4 white(1);
-    //vec4 black(0, 0, 0, 1);
-    //for (int i = 0; i <= 20; ++i)
-    //{
-    //    Gizmos::addLine(vec3(-10 + i, -0.01, -10), vec3(-10 + i, -0.01, 10), i == 10 ? white : black);
-    //    Gizmos::addLine(vec3(-10, -0.01, -10 + i), vec3(10, -0.01, -10 + i), i == 10 ? white : black);
-    //}
-	
-#pragma endregion
-
 	for each (OpenBox* ob in rooms)
 	{
 		ob->Update();
 	}
 	
+	int w, h;
+	glfwGetWindowSize(m_window, &w, &h);
+	if (w != window_width || h != window_height)
+	{
+		glViewport(0, 0, w, h);
+		window_width = w;
+		window_height = h;
+	}
     m_camera.update(dt);	
 	
     return true;
@@ -121,7 +114,6 @@ void SoundProgramming::draw()
 		ob->Draw(&m_camera);
 	}
 
-    Gizmos::draw(m_camera.proj, m_camera.view);
 	DrawGUI();
 
 	ImGui::Render();

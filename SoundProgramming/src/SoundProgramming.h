@@ -50,6 +50,8 @@ public:
 
 	OpenBox* rooms[5];
 	float a = 1;
+
+	int window_width, window_height;
 };
 
 #endif //CAM_PROJ_H_

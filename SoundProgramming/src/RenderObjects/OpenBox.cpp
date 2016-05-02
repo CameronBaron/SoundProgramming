@@ -66,7 +66,6 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 
 void OpenBox::Update()
 {
-	Gizmos::addSphere(m_position, 0.1f, 4, 4, vec4(0, 0, 1, 1));
 	m_rotation = glm::quat(1,20,1,1);
 	Node::Update();
 
@@ -83,6 +82,8 @@ void OpenBox::Update()
 	equaliserValues = &m_sound->fftHeights[0];
 	
 	m_walls[4]->UpdateTexData(m_sampleSize, equaliserValues);
+
+	lightColor = vec3(rand() % 2, rand() % 2, rand() % 2);
 
 	//Lighting
 }
