@@ -131,7 +131,7 @@ void Rect::LoadRawData()
 
 	m_vertexCount = 18 * 6;
 	m_vertBuffer = new float[m_vertexCount];
-	for (int i = 0; i < 36; i++) 
+	for (size_t i = 0; i < 36; i++)
 	{
 		m_vertBuffer[i * 3 + 0] = vertices[indices[i]].x;
 		m_vertBuffer[i * 3 + 1] = vertices[indices[i]].y;
@@ -140,7 +140,7 @@ void Rect::LoadRawData()
 
 	m_texcoordCount = 12 * 6;
 	m_texcoordBuffer = new float[m_texcoordCount];
-	for (int i = 0; i < 36; i++) 
+	for (size_t i = 0; i < 36; i++)
 	{
 		m_texcoordBuffer[i * 2 + 0] = texCoords[texInds[i % 6]].x;
 		m_texcoordBuffer[i * 2 + 1] = texCoords[texInds[i % 6]].y;
@@ -148,7 +148,7 @@ void Rect::LoadRawData()
 
 	m_normalCount = 18 * 6;
 	m_normalBuffer = new float[m_normalCount];
-	for (int i = 0; i < 36; i++) 
+	for (size_t i = 0; i < 36; i++)
 	{
 		m_normalBuffer[i * 3 + 0] = normals[i / 6].x;
 		m_normalBuffer[i * 3 + 1] = normals[i / 6].y;
@@ -158,15 +158,15 @@ void Rect::LoadRawData()
 	arraySize = m_vertexCount + m_texcoordCount + m_normalCount;
 	arrays = new float[arraySize];
 	
-	for (int i = 0; i < m_vertexCount; i++)
+	for (size_t i = 0; i < m_vertexCount; i++)
 	{
 		arrays[i] = m_vertBuffer[i];
 	}
-	for (int i = 0; i < m_normalCount; i++)
+	for (size_t i = 0; i < m_normalCount; i++)
 	{
 		arrays[i + m_vertexCount] = m_normalBuffer[i];
 	}
-	for (int i = 0; i < m_texcoordCount; i++)
+	for (size_t i = 0; i < m_texcoordCount; i++)
 	{
 		arrays[i + m_normalCount + m_vertexCount] = m_texcoordBuffer[i];
 	}

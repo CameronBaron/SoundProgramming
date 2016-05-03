@@ -58,7 +58,7 @@ void OpenBox::Init(FMOD::System* a_FMsystem)
 	//Lighting
 	LoadLightUniformLocs();
 	lightColor = vec3(1, 1, 1);
-	lightAmbient = 5;
+	lightAmbient = 20;
 	lightConstantAtt = 1;
 	lightExpAtt = 1;
 	lightLinearAtt = 1;

@@ -12,7 +12,7 @@ bool SoundProgramming::startup()
         return false;
     }
 
-    glClearColor(0, 0, 0, 1);
+    glClearColor(0.1f, 0.1f, 0.1f, 1);
     glEnable(GL_DEPTH_TEST);
 	window_width = 1280;
 	window_height = 780;
@@ -86,7 +86,7 @@ bool SoundProgramming::update()
 	result = m_pFModSystem->update();
 #pragma endregion
 
-	for each (OpenBox* ob in rooms)
+	for (OpenBox* ob : rooms)
 	{
 		ob->Update();
 	}
@@ -109,7 +109,7 @@ void SoundProgramming::draw()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	ImGui_ImplGlfwGL3_NewFrame();
 
-	for each (OpenBox* ob in rooms)
+	for (OpenBox* ob : rooms)
 	{
 		ob->Draw(&m_camera);
 	}
@@ -132,7 +132,7 @@ void SoundProgramming::DrawGUI()
 		ImGui::DragFloat("Doppler Level", &dopplerLevel, 0.01f, 0.0f, 1.0f);
 	}
 
-	for each (OpenBox* ob in rooms)
+	for (OpenBox* ob : rooms)
 	{
 		ob->DrawGUI();
 	}
